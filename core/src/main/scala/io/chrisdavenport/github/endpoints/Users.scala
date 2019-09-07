@@ -3,15 +3,14 @@ package io.chrisdavenport.github.endpoints
 import cats.implicits._
 import cats.data._
 import cats.effect._
-import io.chrisdavenport.github.data.Definitions._
+import io.chrisdavenport.github.data.Users._
 import org.http4s._
 import org.http4s.implicits._
 import org.http4s.client.Client
-import org.http4s.circe.CirceEntityCodec._
 import fs2.Stream
 
 import io.chrisdavenport.github.Auth
-
+import io.chrisdavenport.github.internals.GithubMedia._
 import io.chrisdavenport.github.internals.RequestConstructor
 
 object Users {
@@ -37,14 +36,17 @@ object Users {
       uri"/user"
     )
 
+  // We expose this as the returned list for each request
+  // that way users can monitor how many requests they make
+  // and can know where they stand in regards to their cap.
   def getAllUsers[F[_]: Sync](
     auth: Option[Auth],
     since: Option[String]
-  ): Kleisli[Stream[F, ?], Client[F], SimpleUser] = 
+  ): Kleisli[Stream[F, ?], Client[F], List[SimpleUser]] = 
     RequestConstructor.runPaginatedRequest[F, List[SimpleUser]](
       auth,
       uri"/users"
-    ).flatMapF(Stream.emits(_))
+    )
 
   // Patch so presently only updates. Unsure 
   // if null values are removed entirely, so

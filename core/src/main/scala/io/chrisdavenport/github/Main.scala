@@ -15,7 +15,7 @@ object Main extends IOApp {
         .map(_.trim())
       authLine <- Resource.liftF(IO(scala.io.Source.fromFile(home |+| "/Documents/.token_test").getLines.toList.head))
 
-      // auth = BasicAuth("ChristopherDavenport", authLine)
+      auth = BasicAuth("ChristopherDavenport", authLine)
       
       out <- Resource.liftF(
         Users.getAllUsers[IO](None, None)
