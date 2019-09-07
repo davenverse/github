@@ -15,16 +15,16 @@ import io.chrisdavenport.github.internals.RequestConstructor
 
 object Users {
 
-  def userInfoFor[F[_]: Sync](username: String): Kleisli[F, Client[F], User] = 
+  def userInfoFor[F[_]: Sync](username: String, auth: Option[Auth]): Kleisli[F, Client[F], User] = 
     RequestConstructor.runRequestWithNoBody[F, User](
-      None,
+      auth,
       Method.GET,
       uri"/users" / username
     )
 
-  def ownerInfoFor[F[_]: Sync](owner: String): Kleisli[F, Client[F], Owner] =
+  def ownerInfoFor[F[_]: Sync](owner: String, auth: Option[Auth]): Kleisli[F, Client[F], Owner] =
     RequestConstructor.runRequestWithNoBody[F, Owner](
-      None,
+      auth,
       Method.GET,
       uri"/users" / owner
     )
@@ -40,10 +40,10 @@ object Users {
   // that way users can monitor how many requests they make
   // and can know where they stand in regards to their cap.
   def getAllUsers[F[_]: Sync](
-    auth: Option[Auth],
-    since: Option[String]
-  ): Kleisli[Stream[F, ?], Client[F], List[SimpleUser]] = 
-    RequestConstructor.runPaginatedRequest[F, List[SimpleUser]](
+    since: Option[String],
+    auth: Option[Auth]
+  ): Kleisli[Stream[F, ?], Client[F], List[SimpleOwner]] = 
+    RequestConstructor.runPaginatedRequest[F, List[SimpleOwner]](
       auth,
       uri"/users"
     )

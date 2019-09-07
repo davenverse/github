@@ -93,9 +93,9 @@ object RequestConstructor {
     case BasicAuth(username, password) => 
       req.withHeaders(Authorization(BasicCredentials(username, password)))
     case EnterpriseOAuth(_, token) =>
-      req.withHeaders(Authorization(Credentials.Token(AuthScheme.Basic, token)))
+      req.withHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, token)))
     case OAuth(token) =>
-      req.withHeaders(Authorization(Credentials.Token(AuthScheme.Basic, token)))
+      req.withHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, token)))
   }
 
   private val extraHeaders: Headers = Headers(

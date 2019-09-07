@@ -15,21 +15,26 @@ object Main extends IOApp {
         .map(_.trim())
       authLine <- Resource.liftF(IO(scala.io.Source.fromFile(home |+| "/Documents/.token_test").getLines.toList.head))
 
-      auth = BasicAuth("ChristopherDavenport", authLine)
+      auth = OAuth(authLine)
       
-      out <- Resource.liftF(
-        Users.getAllUsers[IO](None, None)
-        .run(c)
-        .evalTap(s => IO(println(s)))
-        .compile
-        .drain
-      )
-      // out <- Resource.liftF(endpoints.Users.userInfoFor[IO]("ChristopherDavenport").run(c))
+      // out <- Resource.liftF(
+      //   Users.getAllUsers[IO](None, None)
+      //   .run(c)
+      //   .evalTap(s => IO(println(s)))
+      //   .compile
+      //   .drain
+      // )
+      out <- liftPrint(endpoints.Users.userInfoAuthenticatedUser[IO](auth).run(c))
+      out <- liftPrint(endpoints.Users.ownerInfoFor[IO]("http4s", auth.some).run(c))
     } yield out
     
   }.use(out => 
-    IO(println(out)).as(ExitCode.Success)
+    // IO(println(out)).as(ExitCode.Success)
+    IO.unit.as(ExitCode.Success)
   )
+
+  def liftPrint[A](io: IO[A]): Resource[IO, A] = 
+    Resource.liftF(io).evalTap(a => IO(println(a)))
 
   // IO(println("I am a new project!")).as(ExitCode.Success)
 
