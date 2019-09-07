@@ -46,8 +46,6 @@ object RequestConstructor {
     c.expect[B](req)
   }
 
-
-
   private def getNextUri[F[_]: MonadError[*[_], Throwable]](r: Response[F]): Option[Uri] = {
     for {
       next <- r.headers.toList.map(Link.matchHeader).collect{
@@ -61,22 +59,27 @@ object RequestConstructor {
     extendedUri: Uri,
   ):  Kleisli[Stream[F, ?], Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
-    def go(uriOpt: Option[Uri]): Pull[F, B, Unit] = uriOpt match {
-      case Some(uri) => 
-        val baseReq = Request[F](method = Method.GET, uri = uri)
-        .withHeaders(extraHeaders)
-        val req = auth.fold(baseReq)(setAuth(_)(baseReq))
-        Pull.eval(c.run(req).use{resp => 
-          resp.as[B].map{
-            (_, getNextUri(resp))
-          }
-        }).flatMap{
-          case (a, opt) => Pull.output1(a) >> go(opt)
-        }
-      case None => Pull.done
-    }
 
-    go(uri.some).stream
+    unfoldEvalish(uri){uri => 
+      val baseReq = Request[F](method = Method.GET, uri = uri)
+        .withHeaders(extraHeaders)
+      val req = auth.fold(baseReq)(setAuth(_)(baseReq))
+      c.run(req).use{resp => 
+          resp.as[B].map{
+            (getNextUri(resp), _)
+          }
+        }
+    }
+  }
+
+  private def unfoldEvalish[F[_], A, B](a: A)(f: A => F[(Option[A], B)]): Stream[F, B] = {
+    def go(o: Option[A]): Pull[F, B, Unit] = o match {
+      case None => Pull.done
+      case Some(a) => Pull.eval(f(a)).flatMap{
+        case (opt, b) => Pull.output1(b) >> go(opt)
+      }
+    }
+    go(a.some).stream
   }
 
   private val GITHUB_URI: Uri = uri"https://api.github.com"
