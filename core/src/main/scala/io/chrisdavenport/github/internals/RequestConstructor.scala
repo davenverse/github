@@ -1,15 +1,17 @@
 package io.chrisdavenport.github.internals
 
-
-
+import cats._
 import cats.effect._
+import cats.implicits._
+import fs2._
 import org.http4s._
 import org.http4s.implicits._
 import org.http4s.client.Client
 import org.http4s.headers.Authorization
 
-import io.chrisdavenport.github._
+import _root_.io.chrisdavenport.github._
 import cats.data.Kleisli
+import org.http4s.headers.Link
 
 
 object RequestConstructor {
@@ -19,21 +21,72 @@ object RequestConstructor {
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
-  ): Kleisli[F, Client[F], B] = Kleisli{c =>
+  ): Kleisli[F, Client[F], B] =
+    runRequest[F, Unit, B](auth, method, extendedUri, None)
+
+  def runRequestWithBody[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
+    auth: Option[Auth],
+    method: Method,
+    extendedUri: Uri,
+    body: A
+  ): Kleisli[F, Client[F], B] =
+    runRequest[F, A, B](auth, method, extendedUri, body.some)
+
+  def runRequest[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
+    auth: Option[Auth],
+    method: Method,
+    extendedUri: Uri,
+    body: Option[A]
+  ):  Kleisli[F, Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
-    val baseReq = Request[F](method = method, uri = uri).withHeaders(extraHeaders)
-    val req = auth.fold(baseReq)(setAuth(_)(baseReq))
+    val baseReq = Request[F](method = method, uri = uri)
+      .withHeaders(extraHeaders)
+    val req2 = auth.fold(baseReq)(setAuth(_)(baseReq))
+    val req = body.fold(req2)(a => req2.withEntity(a))
     c.expect[B](req)
   }
 
-  val GITHUB_URI: Uri = uri"https://api.github.com"
 
-  def baseUrl(auth: Option[Auth]): Uri = auth match {
+
+  private def getNextUri[F[_]: MonadError[*[_], Throwable]](r: Response[F]): Option[Uri] = {
+    for {
+      next <- r.headers.toList.map(Link.matchHeader).collect{
+        case Some(Link(uri, Some("next"), _, _, _)) => uri
+      }.headOption
+    } yield next
+  } 
+
+  def runPaginatedRequest[F[_]: Sync, B: EntityDecoder[F, ?]](
+    auth: Option[Auth],
+    extendedUri: Uri,
+  ):  Kleisli[Stream[F, ?], Client[F], B] = Kleisli{ c =>
+    val uri = Uri.resolve(baseUrl(auth), extendedUri)
+    def go(uriOpt: Option[Uri]): Pull[F, B, Unit] = uriOpt match {
+      case Some(uri) => 
+        val baseReq = Request[F](method = Method.GET, uri = uri)
+        .withHeaders(extraHeaders)
+        val req = auth.fold(baseReq)(setAuth(_)(baseReq))
+        Pull.eval(c.run(req).use{resp => 
+          resp.as[B].map{
+            (_, getNextUri(resp))
+          }
+        }).flatMap{
+          case (a, opt) => Pull.output1(a) >> go(opt)
+        }
+      case None => Pull.done
+    }
+
+    go(uri.some).stream
+  }
+
+  private val GITHUB_URI: Uri = uri"https://api.github.com"
+
+  private def baseUrl(auth: Option[Auth]): Uri = auth match {
     case Some(EnterpriseOAuth(apiEndpoint, _)) => apiEndpoint
     case _ => GITHUB_URI
   }
 
-  def setAuth[F[_]](auth: Auth)(req: Request[F]): Request[F] = auth match{
+  private def setAuth[F[_]](auth: Auth)(req: Request[F]): Request[F] = auth match{
     case BasicAuth(username, password) => 
       req.withHeaders(Authorization(BasicCredentials(username, password)))
     case EnterpriseOAuth(_, token) =>
@@ -42,8 +95,8 @@ object RequestConstructor {
       req.withHeaders(Authorization(Credentials.Token(AuthScheme.Basic, token)))
   }
 
-  val extraHeaders: Headers = Headers(
-    Header("User-Agent", "github.scala/" ++ io.chrisdavenport.github.BuildInfo.version),
+  private val extraHeaders: Headers = Headers(
+    Header("User-Agent", "github.scala/" ++ _root_.io.chrisdavenport.github.BuildInfo.version),
     Header("Accept", "application/vnd.github.v3+json")
   )
 }

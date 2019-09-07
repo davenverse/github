@@ -5,13 +5,26 @@ import cats.effect._
 
 import org.http4s.client.blaze.BlazeClientBuilder
 
+import endpoints._
 object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
     for {
       c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
-      // out <- Resource.liftF(endpoints.Users.userInfoCurrent[IO](auth).run(c))
-      out <- Resource.liftF(endpoints.Users.userInfoFor[IO]("ChristopherDavenport").run(c))
+      home <- Resource.liftF(IO(sys.env("HOME")))
+        .map(_.trim())
+      authLine <- Resource.liftF(IO(scala.io.Source.fromFile(home |+| "/Documents/.token_test").getLines.toList.head))
+
+      // auth = BasicAuth("ChristopherDavenport", authLine)
+      
+      out <- Resource.liftF(
+        Users.getAllUsers[IO](None, None)
+        .run(c)
+        .evalTap(s => IO(println(s)))
+        .compile
+        .drain
+      )
+      // out <- Resource.liftF(endpoints.Users.userInfoFor[IO]("ChristopherDavenport").run(c))
     } yield out
     
   }.use(out => 

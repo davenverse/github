@@ -8,7 +8,7 @@ import java.time.Instant
 
 import io.circe._
 
-object definitions {
+object Definitions {
 
   sealed trait OwnerType
   object OwnerType {
