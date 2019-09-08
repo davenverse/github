@@ -1,5 +1,19 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
+
+val catsV = "2.0.0-RC2"
+val catsEffectV = "2.0.0-RC2"
+val fs2V = "1.1.0-M1"
+val http4sV = "0.21.0-M4"
+val circeV = "0.12.0-RC4"
+val catsEffectTestingV = "0.1.0"
+// val log4catsV = "1.0.0-RC3"
+
+val specs2V = "4.7.0"
+
+val kindProjectorV = "0.10.3"
+val betterMonadicForV = "0.3.1"
+
 lazy val `github` = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
@@ -18,6 +32,12 @@ lazy val example = project.in(file("example"))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
   .dependsOn(core)
+  .settings(
+    libraryDependencies ++= Seq(
+      // For Testing As I go
+    "org.http4s"                  %% "http4s-blaze-client"        % http4sV,
+    )
+  )
 
 lazy val docs = project.in(file("docs"))
   .disablePlugins(MimaPlugin)
@@ -29,18 +49,6 @@ lazy val docs = project.in(file("docs"))
 lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
-
-val catsV = "2.0.0-RC2"
-val catsEffectV = "2.0.0-RC2"
-val fs2V = "1.1.0-M1"
-val http4sV = "0.21.0-M4"
-val circeV = "0.12.0-RC4"
-val log4catsV = "1.0.0-RC3"
-
-val specs2V = "4.7.0"
-
-val kindProjectorV = "0.10.3"
-val betterMonadicForV = "0.3.1"
 
 
 // General Settings
@@ -72,14 +80,12 @@ lazy val commonSettings = Seq(
     "co.fs2"                      %% "fs2-core"                   % fs2V,
     "co.fs2"                      %% "fs2-io"                     % fs2V,
 
-    "org.http4s"                  %% "http4s-dsl"                 % http4sV,
     "org.http4s"                  %% "http4s-client"              % http4sV,
     "org.http4s"                  %% "http4s-circe"               % http4sV,
-
-    // For Testing As I go
-    "org.http4s"                  %% "http4s-blaze-client"        % http4sV,
+    "org.http4s"                  %% "http4s-dsl"                 % http4sV     % Test,
 
     "io.circe"                    %% "circe-core"                 % circeV,
+    "io.circe"                    %% "circe-literal"              % circeV      % Test,
     // "io.circe"                    %% "circe-generic"              % circeV,
     // "io.circe"                    %% "circe-parser"               % circeV,
 
@@ -87,9 +93,10 @@ lazy val commonSettings = Seq(
     // "io.chrisdavenport"           %% "log4cats-slf4j"             % log4catsV,
     // "io.chrisdavenport"           %% "log4cats-extras"            % log4catsV,
     // "io.chrisdavenport"           %% "log4cats-testing"           % log4catsV     % Test,
-
+    
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
-    "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test
+    "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
+    "com.codecommit"              %% "cats-effect-testing-specs2" % catsEffectTestingV  % Test
   )
 )
 
