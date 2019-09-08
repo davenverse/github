@@ -6,6 +6,7 @@ import cats.effect._
 import org.http4s.client.blaze.BlazeClientBuilder
 
 import endpoints._
+import data.Repositories.NewRepo
 object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
@@ -24,9 +25,17 @@ object Main extends IOApp {
       //   .compile
       //   .drain
       // )
-      out <- liftPrint(endpoints.Users.userInfoAuthenticatedUser[IO](auth).run(c))
-      out <- liftPrint(endpoints.Users.ownerInfoFor[IO]("http4s", auth.some).run(c))
-    } yield out
+      // out <- liftPrint(endpoints.Users.userInfoAuthenticatedUser[IO](auth).run(c))
+      // out <- liftPrint(endpoints.Users.ownerInfoFor[IO]("http4s", auth.some).run(c))
+      _ <- liftPrint(endpoints.Repositories.repository[IO]("http4s", "http4s", auth.some).run(c))
+      // _ <- liftPrint(endpoints.Repositories.create[IO](NewRepo.create("test-creation-1"), auth).run(c))
+      // _ <- liftPrint(endpoints.Repositories.edit[IO](
+      //   "ChristopherDavenport",
+      //   "test-creation-1",
+      //   data.Repositories.EditRepo(None, "foo".some, None, true.some, true.some, true.some, true.some),
+      //   auth
+      //   ).run(c))
+    } yield ()
     
   }.use(out => 
     // IO(println(out)).as(ExitCode.Success)
