@@ -68,9 +68,9 @@ object Content {
     repo: String,
     deleteFile: DeleteFile,
     auth: Auth
-  ) = RequestConstructor.runRequestWithBody[F, DeleteFile, ContentResult](
+  ) = RequestConstructor.runRequestWithBody[F, DeleteFile, Unit](
     auth.some,
-    Method.PUT,
+    Method.DELETE,
     uri"/repos" / owner /  repo / "contents" / deleteFile.path,
     deleteFile
   )
