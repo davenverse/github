@@ -72,10 +72,10 @@ lazy val commonSettings = Seq(
     // "io.circe"                    %% "circe-generic"              % circeV,
     // "io.circe"                    %% "circe-parser"               % circeV,
 
-    "io.chrisdavenport"           %% "log4cats-core"              % log4catsV,
+    // "io.chrisdavenport"           %% "log4cats-core"              % log4catsV,
     // "io.chrisdavenport"           %% "log4cats-slf4j"             % log4catsV,
     // "io.chrisdavenport"           %% "log4cats-extras"            % log4catsV,
-    "io.chrisdavenport"           %% "log4cats-testing"           % log4catsV     % Test,
+    // "io.chrisdavenport"           %% "log4cats-testing"           % log4catsV     % Test,
 
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test
