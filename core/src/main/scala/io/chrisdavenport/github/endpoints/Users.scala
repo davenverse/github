@@ -45,7 +45,7 @@ object Users {
   ): Kleisli[Stream[F, ?], Client[F], List[SimpleOwner]] = 
     RequestConstructor.runPaginatedRequest[F, List[SimpleOwner]](
       auth,
-      uri"/users"
+      uri"/users".withOptionQueryParam("since", since)
     )
 
   // Patch so presently only updates. Unsure 
