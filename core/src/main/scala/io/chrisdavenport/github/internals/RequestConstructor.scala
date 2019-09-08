@@ -82,7 +82,7 @@ object RequestConstructor {
     * if it is Some, or terminating on Noine
     *
     * {{{
-    * scala> unfoldLoop(0)(i => (i, if (i < 5) Some((i+1)) else None).toList
+    * scala> unfoldLoop(0)(i => (i, if (i < 5) Some((i+1)) else None)).toList
     * res0: List[Int] = List(0, 1, 2, 3, 4, 5)
     * }}}
     */
