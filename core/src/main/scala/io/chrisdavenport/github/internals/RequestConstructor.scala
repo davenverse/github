@@ -76,24 +76,6 @@ object RequestConstructor {
   //These two will be in the next version of fs2
   
 
-  /**
-    * Creates a stream by successively applying `f` to a `S`, emitting
-    * each output `O` and using each output `S` as input to the next invocation of `f`
-    * if it is Some, or terminating on Noine
-    *
-    * {{{
-    * scala> unfoldLoop(0)(i => (i, if (i < 5) Some((i+1)) else None)).toList
-    * res0: List[Int] = List(0, 1, 2, 3, 4, 5)
-    * }}}
-    */
-  private def unfoldLoop[F[x] <: Pure[x], S, O](s: S)(f: S => (O, Option[S])): Stream[F, O] = 
-    Pull.loop[F, O, S]{
-      s => 
-          val (o, sOpt) = f(s)
-          Pull.output1(o) >> Pull.pure(sOpt)
-    }(s)
-    .void
-    .stream
   
   /** Like [[unfoldLoop]], but takes an effectful function. */
   private def unfoldLoopEval[F[_], S, O](s: S)(f: S => F[(O, Option[S])]): Stream[F, O] =
@@ -123,7 +105,7 @@ object RequestConstructor {
       req.withHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, token)))
   }
 
-  private val extraHeaders: Headers = Headers(
+  private val extraHeaders: Headers = Headers.of(
     Header("User-Agent", "github.scala/" ++ _root_.io.chrisdavenport.github.BuildInfo.version),
     Header("Accept", "application/vnd.github.v3+json")
   )
