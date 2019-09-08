@@ -116,6 +116,7 @@ object Content {
     content: ContentResultInfo,
     // commit: GitCommit
   )
+
   object ContentResult {
     implicit val decoder = new Decoder[ContentResult]{
       def apply(c: HCursor): Decoder.Result[ContentResult] = 
@@ -130,6 +131,7 @@ object Content {
     name: String,
     email: String
   )
+
   object Author {
     implicit val encoder = new Encoder[Author]{
       def apply(a: Author): Json = Json.obj(
@@ -169,6 +171,8 @@ object Content {
     author: Option[Author],
     committer: Option[Author]
   )
+
+
   object UpdateFile {
     implicit val encoder = new Encoder[UpdateFile]{
       def apply(a: UpdateFile): Json = Json.obj(

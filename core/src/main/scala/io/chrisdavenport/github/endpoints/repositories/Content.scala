@@ -27,6 +27,53 @@ object Content {
       (uri"/repos" / owner / repo / "contents" / path)
         .withOptionQueryParam("ref", ref)
     )
+
+  def readmeFor[F[_]: Sync](
+    owner: String,
+    repo: String,
+    auth: Option[Auth]
+  ) = 
+    RequestConstructor.runRequestWithNoBody[F, Content](
+      auth,
+      Method.GET,
+      uri"/repos" / owner / repo / "readme"
+    )
+
+  def createFile[F[_]: Sync](
+    owner: String,
+    repo: String,
+    createFile: CreateFile,
+    auth: Auth
+  ) = RequestConstructor.runRequestWithBody[F, CreateFile, ContentResult](
+    auth.some,
+    Method.PUT,
+    uri"/repos" / owner /  repo / "contents" / createFile.path,
+    createFile
+  )
+
+  def updateFile[F[_]: Sync](
+    owner: String,
+    repo: String,
+    updateFile: UpdateFile,
+    auth: Auth
+  ) = RequestConstructor.runRequestWithBody[F, UpdateFile, ContentResult](
+    auth.some,
+    Method.PUT,
+    uri"/repos" / owner /  repo / "contents" / updateFile.path,
+    updateFile
+  )
+
+  def deleteFile[F[_]: Sync](
+    owner: String,
+    repo: String,
+    deleteFile: DeleteFile,
+    auth: Auth
+  ) = RequestConstructor.runRequestWithBody[F, DeleteFile, ContentResult](
+    auth.some,
+    Method.PUT,
+    uri"/repos" / owner /  repo / "contents" / deleteFile.path,
+    deleteFile
+  )
   
   
 }
