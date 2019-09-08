@@ -19,7 +19,7 @@ import io.chrisdavenport.github.OAuth
 class ContentSpec extends Specification with CatsEffect {
   "Content endpoints" should {
     val getContent = HttpRoutes.of[IO]{
-      case GET -> Root / "repo" / _ / _ / "contents" / "file" => 
+      case GET -> Root / "repos" / _ / _ / "contents" / "file" => 
         val json = json"""
 {
   "type": "file",
@@ -41,7 +41,7 @@ class ContentSpec extends Specification with CatsEffect {
 }
         """
         Ok(json)
-      case GET -> Root / "repo" / _ / _ / "contents" / "directory" => 
+      case GET -> Root / "repos" / _ / _ / "contents" / "directory" => 
         val json = json"""
         [
   {

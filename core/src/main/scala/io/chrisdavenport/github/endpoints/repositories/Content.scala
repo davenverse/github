@@ -24,7 +24,7 @@ object Content {
     RequestConstructor.runRequestWithNoBody[F, Content](
       auth,
       Method.GET,
-      (uri"/repo" / owner / repo / "contents" / path)
+      (uri"/repos" / owner / repo / "contents" / path)
         .withOptionQueryParam("ref", ref)
     )
   

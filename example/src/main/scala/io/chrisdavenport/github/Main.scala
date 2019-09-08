@@ -35,9 +35,13 @@ object Main extends IOApp {
       //   data.Repositories.EditRepo(None, "foo".some, None, true.some, true.some, true.some, true.some),
       //   auth
       //   ).run(c))
+      _ <- liftPrint(
+          endpoints.repositories.Content.contentsFor[IO]("http4s", "http4s", "build.sbt", None, auth.some)
+            run(c)
+        )
     } yield ()
     
-  }.use(out => 
+  }.use(_ => 
     // IO(println(out)).as(ExitCode.Success)
     IO.unit.as(ExitCode.Success)
   )
