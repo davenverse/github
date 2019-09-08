@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 lazy val `github` = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
-  .aggregate(core)
+  .aggregate(core, example)
 
 lazy val core = project.in(file("core"))
   .enablePlugins(BuildInfoPlugin)
@@ -13,6 +13,11 @@ lazy val core = project.in(file("core"))
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := "io.chrisdavenport.github"
   )
+
+lazy val example = project.in(file("example"))
+  .disablePlugins(MimaPlugin)
+  .settings(commonSettings, releaseSettings, skipOnPublishSettings)
+  .dependsOn(core)
 
 lazy val docs = project.in(file("docs"))
   .disablePlugins(MimaPlugin)
