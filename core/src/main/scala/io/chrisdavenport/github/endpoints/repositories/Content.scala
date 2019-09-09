@@ -3,7 +3,6 @@ package io.chrisdavenport.github.endpoints.repositories
 import cats.implicits._
 import cats.data._
 import cats.effect._
-import io.chrisdavenport.github.data.Repositories._
 import io.chrisdavenport.github.data.Content._
 import org.http4s._
 import org.http4s.implicits._
