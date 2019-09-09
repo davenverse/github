@@ -10,7 +10,6 @@ import io.circe._
 import io.circe.syntax._
 
 object Content {
- 
 
   sealed trait ContentItemType
   object ContentItemType{

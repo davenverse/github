@@ -5,8 +5,6 @@ import cats.effect._
 
 import org.http4s.client.blaze.BlazeClientBuilder
 
-import endpoints._
-import data.Repositories.NewRepo
 object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
@@ -35,10 +33,6 @@ object Main extends IOApp {
       //   data.Repositories.EditRepo(None, "foo".some, None, true.some, true.some, true.some, true.some),
       //   auth
       //   ).run(c))
-      _ <- liftPrint(
-          endpoints.repositories.Content.contentsFor[IO]("http4s", "http4s", "build.sbt", None, auth.some)
-            run(c)
-        )
     } yield ()
     
   }.use(_ => 
@@ -48,8 +42,4 @@ object Main extends IOApp {
 
   def liftPrint[A](io: IO[A]): Resource[IO, A] = 
     Resource.liftF(io).evalTap(a => IO(println(a)))
-
-  // IO(println("I am a new project!")).as(ExitCode.Success)
-
-
 }
