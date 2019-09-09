@@ -4,15 +4,20 @@ import cats.implicits._
 import cats.effect._
 import org.http4s.client.blaze.BlazeClientBuilder
 import java.{util => ju}
-
+import endpoints.repositories.Content
 object GetFileContent extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
     for {
       c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
       out <- Resource.liftF(
-          endpoints.repositories.Content.contentsFor[IO]("ChristopherDavenport", "github", "README.md", None, None)
-            run(c)
+          Content.contentsFor[IO](
+            "ChristopherDavenport",
+            "github",
+            "README.md",
+            None,
+            None
+          ).run(c)
         )
       _ <- Resource.liftF(out match {
         case data.Content.Content.File(data) => 

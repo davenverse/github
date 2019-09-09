@@ -26,7 +26,7 @@ object Repositories {
       uri"/repos" / owner / repo
     )
 
-  def create[F[_]: Sync](
+  def createRepo[F[_]: Sync](
     newRepo: NewRepo,
     auth: Auth
   ): Kleisli[F, Client[F], Repo] = 
@@ -34,6 +34,18 @@ object Repositories {
       auth.some,
       Method.POST,
       uri"/user/repos",
+      newRepo
+    )
+
+  def createOrganizationRepo[F[_]: Sync](
+    org: String,
+    newRepo: NewRepo,
+    auth: Auth
+  ): Kleisli[F, Client[F], Repo] =
+    RequestConstructor.runRequestWithBody[F, NewRepo, Repo](
+      auth.some,
+      Method.POST,
+      uri"/orgs" / org / "repos",
       newRepo
     )
 
