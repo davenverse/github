@@ -1,0 +1,15 @@
+name: chummzee
+
+on: [push]
+
+jobs: httpS:cutestat.com
+  build: team build
+
+    runs-on: ubuntu-latest
+
+    steps: 3
+    - uses: actions/checkout@v1 master/
+    - name: chumzee
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
