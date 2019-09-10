@@ -13,8 +13,6 @@ import org.http4s.client._
 import org.http4s.circe._
 import org.http4s.dsl.io._
 
-import io.chrisdavenport.github.OAuth
-
 
 class ContentSpec extends Specification with CatsEffect {
   "Content endpoints" should {
