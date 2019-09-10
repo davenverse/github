@@ -15,6 +15,7 @@ import org.http4s.dsl.io._
 
 import io.chrisdavenport.github.OAuth
 import io.chrisdavenport.github.data
+import io.chrisdavenport.github.internals.GithubMediaType
 
 
 class DeploymentsSpec extends Specification with CatsEffect {
@@ -71,7 +72,8 @@ class DeploymentsSpec extends Specification with CatsEffect {
         "anything",
         "anything",
         data.Deployments.NewDeployment.create("topic-branch"),
-        OAuth("anything")
+        OAuth("anything"),
+        GithubMediaType.`application/vnd.github.ant-man-preview+json`
       )
       .run(Client.fromHttpApp(createDeploymentRoute.orNotFound))
       .attempt
@@ -127,7 +129,8 @@ class DeploymentsSpec extends Specification with CatsEffect {
         "anything",
         "anything",
         1,
-        OAuth("anything")
+        OAuth("anything"),
+        GithubMediaType.`application/vnd.github.ant-man-preview+json`
       )
       .run(Client.fromHttpApp(getDeploymentRoute.orNotFound))
       .attempt
@@ -184,7 +187,8 @@ class DeploymentsSpec extends Specification with CatsEffect {
       Deployments.listDeployments[IO](
         "anything",
         "anything",
-        OAuth("anything")
+        OAuth("anything"),
+        GithubMediaType.`application/vnd.github.ant-man-preview+json`
       )
       .run(Client.fromHttpApp(listDeploymentsRoute.orNotFound))
       .attempt
@@ -237,7 +241,8 @@ class DeploymentsSpec extends Specification with CatsEffect {
         "anything",
         1,
         data.Deployments.NewDeploymentStatus.create(data.Deployments.DeploymentState.Success),
-        OAuth("anything")
+        OAuth("anything"),
+        GithubMediaType.`application/vnd.github.ant-man-preview+json`
       )
       .run(Client.fromHttpApp(createDeploymentStatusRoute.orNotFound))
       .attempt
@@ -290,7 +295,8 @@ class DeploymentsSpec extends Specification with CatsEffect {
         "anything",
         1,
         1,
-        OAuth("anything")
+        OAuth("anything"),
+        GithubMediaType.`application/vnd.github.ant-man-preview+json`
       )
       .run(Client.fromHttpApp(getDeploymentStatusRoute.orNotFound))
       .attempt
@@ -343,7 +349,8 @@ class DeploymentsSpec extends Specification with CatsEffect {
         "anything",
         "anything",
         1,
-        OAuth("anything")
+        OAuth("anything"),
+        GithubMediaType.`application/vnd.github.ant-man-preview+json`
       )
       .run(Client.fromHttpApp(listDeploymentStatusesRoute.orNotFound))
       .attempt

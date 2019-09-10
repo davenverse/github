@@ -1,11 +1,15 @@
 package io.chrisdavenport.github.data
 
+import java.time.Instant
+
 import cats.implicits._
 import org.http4s.Uri
 import org.http4s.circe._
-import java.time.Instant
 import io.circe._
 import io.circe.syntax._
+import org.http4s._
+import org.http4s.circe._
+import cats.Applicative
 
 object Deployments {
 
@@ -187,6 +191,19 @@ object Deployments {
         "production_environment" -> a.productionEnvironment.asJson
       ).dropNullValues
     }
+
+    implicit def newDeploymentEntityEncoder[F[_]: Applicative] = {
+      val json = jsonEncoderOf[F, NewDeployment]
+
+      new EntityEncoder[F, NewDeployment] {
+        def headers: Headers =
+          Headers.of(
+            Header("Accept", "application/vnd.github.ant-man-preview+json")
+          ) ++ json.headers
+
+        def toEntity(a: NewDeployment): Entity[F] = json.toEntity(a)
+      }
+    }
   }
 
   final case class NewDeploymentStatus(
@@ -211,6 +228,19 @@ object Deployments {
         "description" -> a.description.asJson,
         "auto_inactive" -> a.autoInactive.asJson
       ).dropNullValues
+    }
+
+    implicit def newDeploymentStatusEntityEncoder[F[_]: Applicative] = {
+      val json = jsonEncoderOf[F, NewDeploymentStatus]
+
+      new EntityEncoder[F, NewDeploymentStatus] {
+        def headers: Headers =
+          Headers.of(
+            Header("Accept", "application/vnd.github.ant-man-preview+json")
+          ) ++ json.headers
+
+        def toEntity(a: NewDeploymentStatus): Entity[F] = json.toEntity(a)
+      }
     }
   }
 }

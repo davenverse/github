@@ -1,8 +1,8 @@
 package io.chrisdavenport.github.endpoints
 
-import cats.implicits._
 import cats.data._
 import cats.effect._
+import cats.implicits._
 import io.chrisdavenport.github.data.Deployments._
 import org.http4s._
 import org.http4s.implicits._
@@ -11,6 +11,7 @@ import org.http4s.client.Client
 import io.chrisdavenport.github.Auth
 import io.chrisdavenport.github.internals.GithubMedia._
 import io.chrisdavenport.github.internals.RequestConstructor
+import io.chrisdavenport.github.internals.GithubMediaType
 
 object Deployments {
 
@@ -18,36 +19,42 @@ object Deployments {
     owner: String,
     repo: String,
     deployment: Int,
-    auth: Auth
+    auth: Auth,
+    accept: GithubMediaType
   ): Kleisli[F, Client[F], Deployment] = 
-  RequestConstructor.runRequestWithNoBody[F, Deployment](
+  RequestConstructor.runRequestWithNoBodyAccept[F, Deployment](
       auth.some,
       Method.GET,
-      uri"/repos" / owner / repo / "deployments" / deployment.toString()
+      uri"/repos" / owner / repo / "deployments" / deployment.toString,
+      accept
     )
 
   def createDeployment[F[_]: Sync](
     owner: String,
     repo: String,
     newDeployment: NewDeployment,
-    auth: Auth
+    auth: Auth,
+    accept: GithubMediaType
   ): Kleisli[F, Client[F], Deployment] =
-  RequestConstructor.runRequestWithBody[F, NewDeployment, Deployment](
+  RequestConstructor.runRequestWithBodyAccept[F, NewDeployment, Deployment](
     auth.some,
     Method.POST,
     uri"/repos" / owner / repo / "deployments",
-    newDeployment
+    newDeployment,
+    accept
   )
 
   def listDeployments[F[_]: Sync](
     owner: String,
     repo: String,
-    auth: Auth
+    auth: Auth,
+    accept: GithubMediaType
   ): Kleisli[F, Client[F], List[Deployment]] = 
-  RequestConstructor.runRequestWithNoBody[F, List[Deployment]](
+  RequestConstructor.runRequestWithNoBodyAccept[F, List[Deployment]](
       auth.some,
       Method.GET,
-      uri"/repos" / owner / repo / "deployments"
+      uri"/repos" / owner / repo / "deployments",
+      accept
     )
 
   def deploymentStatus[F[_]: Sync](
@@ -55,12 +62,14 @@ object Deployments {
     repo: String,
     deployment: Int,
     status: Int,
-    auth: Auth
+    auth: Auth,
+    accept: GithubMediaType
   ): Kleisli[F, Client[F], DeploymentStatus] = 
-  RequestConstructor.runRequestWithNoBody[F, DeploymentStatus](
+  RequestConstructor.runRequestWithNoBodyAccept[F, DeploymentStatus](
       auth.some,
       Method.GET,
-      uri"/repos" / owner / repo / "deployments" / deployment.toString() / "statuses" / status.toString()
+      uri"/repos" / owner / repo / "deployments" / deployment.toString / "statuses" / status.toString,
+      accept
     )
 
   def createDeploymentStatuses[F[_]: Sync](
@@ -68,24 +77,28 @@ object Deployments {
     repo: String,
     deployment: Int,
     status: NewDeploymentStatus,
-    auth: Auth
+    auth: Auth,
+    accept: GithubMediaType
   ): Kleisli[F, Client[F], DeploymentStatus] = 
-  RequestConstructor.runRequestWithBody[F, NewDeploymentStatus, DeploymentStatus](
+  RequestConstructor.runRequestWithBodyAccept[F, NewDeploymentStatus, DeploymentStatus](
       auth.some,
       Method.POST,
-      uri"/repos" / owner / repo / "deployments" / deployment.toString() / "statuses",
-      status
+      uri"/repos" / owner / repo / "deployments" / deployment.toString / "statuses",
+      status,
+      accept
     )
 
   def listDeploymentStatuses[F[_]: Sync](
     owner: String,
     repo: String,
     deployment: Int,
-    auth: Auth
+    auth: Auth,
+    accept: GithubMediaType
   ): Kleisli[F, Client[F], List[DeploymentStatus]] = 
-  RequestConstructor.runRequestWithNoBody[F, List[DeploymentStatus]](
+  RequestConstructor.runRequestWithNoBodyAccept[F, List[DeploymentStatus]](
       auth.some,
       Method.GET,
-      uri"/repos" / owner / repo / "deployments" / deployment.toString() / "statuses"
+      uri"/repos" / owner / repo / "deployments" / deployment.toString / "statuses",
+      accept
     )
 }
