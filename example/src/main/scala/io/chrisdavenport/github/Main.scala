@@ -25,7 +25,7 @@ object Main extends IOApp {
       // )
       // out <- liftPrint(endpoints.Users.userInfoAuthenticatedUser[IO](auth).run(c))
       // out <- liftPrint(endpoints.Users.ownerInfoFor[IO]("http4s", auth.some).run(c))
-      _ <- liftPrint(endpoints.Repositories.repository[IO]("http4s", "http4s", auth.some).run(c))
+      // _ <- liftPrint(endpoints.Repositories.repository[IO]("http4s", "http4s", auth.some).run(c))
       // _ <- liftPrint(endpoints.Repositories.create[IO](NewRepo.create("test-creation-1"), auth).run(c))
       // _ <- liftPrint(endpoints.Repositories.edit[IO](
       //   "ChristopherDavenport",
