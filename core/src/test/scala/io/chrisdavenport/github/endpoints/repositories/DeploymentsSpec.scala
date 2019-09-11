@@ -1,4 +1,4 @@
-package io.chrisdavenport.github.endpoints
+package io.chrisdavenport.github.endpoints.repositories
 
 import org.specs2.mutable.Specification
 

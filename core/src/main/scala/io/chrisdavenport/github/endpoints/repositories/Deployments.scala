@@ -1,4 +1,4 @@
-package io.chrisdavenport.github.endpoints
+package io.chrisdavenport.github.endpoints.repositories
 
 import cats.data._
 import cats.effect._
