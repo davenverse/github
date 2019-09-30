@@ -19,21 +19,21 @@ object Users {
     RequestConstructor.runRequestWithNoBody[F, User](
       auth,
       Method.GET,
-      uri"/users" / username
+      uri"users" / username
     )
 
   def ownerInfoFor[F[_]: Sync](owner: String, auth: Option[Auth]): Kleisli[F, Client[F], Owner] =
     RequestConstructor.runRequestWithNoBody[F, Owner](
       auth,
       Method.GET,
-      uri"/users" / owner
+      uri"users" / owner
     )
 
   def userInfoAuthenticatedUser[F[_]: Sync](auth: Auth): Kleisli[F, Client[F], User] = 
     RequestConstructor.runRequestWithNoBody[F, User](
       auth.some,
       Method.GET,
-      uri"/user"
+      uri"user"
     )
 
   // We expose this as the returned list for each request
@@ -45,7 +45,7 @@ object Users {
   ): Kleisli[Stream[F, ?], Client[F], List[SimpleOwner]] = 
     RequestConstructor.runPaginatedRequest[F, List[SimpleOwner]](
       auth,
-      uri"/users".withOptionQueryParam("since", since)
+      uri"users".withOptionQueryParam("since", since)
     )
 
   // Patch so presently only updates. Unsure 
@@ -79,7 +79,7 @@ object Users {
     RequestConstructor.runRequestWithBody[F, Json, User](
       auth.some,
       Method.PATCH,
-      uri"/user",
+      uri"user",
       json
     )
   }
