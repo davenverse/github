@@ -1,13 +1,11 @@
 package io.chrisdavenport.github.endpoints
 
 import cats.implicits._
-import cats.data._
 import cats.effect._
 import io.chrisdavenport.github.data.Issues
 import io.chrisdavenport.github.data.PullRequests._
 import org.http4s._
 import org.http4s.implicits._
-import org.http4s.client.Client
 
 import io.chrisdavenport.github.Auth
 import io.chrisdavenport.github.internals.GithubMedia._
@@ -21,7 +19,7 @@ object PullRequests {
     auth: Option[Auth]
   ) = RequestConstructor.runPaginatedRequest[F, List[SimplePullRequest]](
     auth,
-    uri"/repos" / owner / name / "pulls"
+    uri"repos" / owner / name / "pulls"
   )
 
   def pullRequest[F[_]: Sync](
@@ -32,7 +30,7 @@ object PullRequests {
   ) = RequestConstructor.runRequestWithNoBody[F, PullRequest](
     auth,
     Method.GET,
-    uri"/repos" / owner / name / "pulls" / issueNumber.toInt.toString
+    uri"repos" / owner / name / "pulls" / issueNumber.toInt.toString
   )
 
   def createPullRequest[F[_]: Sync](
@@ -43,7 +41,7 @@ object PullRequests {
   ) = RequestConstructor.runRequestWithBody[F, CreatePullRequest, PullRequest](
     auth.some,
     Method.POST,
-    uri"/repos" / owner / name / "pulls",
+    uri"repos" / owner / name / "pulls",
     createPullRequest
   )
 
@@ -56,7 +54,7 @@ object PullRequests {
   ) = RequestConstructor.runRequestWithBody[F, EditPullRequest, PullRequest](
     auth.some,
     Method.PATCH,
-    uri"/repos" / owner / name / "pulls" / issueNumber.toInt.toString ,
+    uri"repos" / owner / name / "pulls" / issueNumber.toInt.toString,
     updatePullRequest
   )
 

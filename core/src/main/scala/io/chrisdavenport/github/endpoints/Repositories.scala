@@ -23,7 +23,7 @@ object Repositories {
   RequestConstructor.runRequestWithNoBody[F, Repo](
       auth,
       Method.GET,
-      uri"/repos" / owner / repo
+      uri"repos" / owner / repo
     )
 
   def createRepo[F[_]: Sync](
@@ -33,7 +33,7 @@ object Repositories {
   RequestConstructor.runRequestWithBody[F, NewRepo, Repo](
       auth.some,
       Method.POST,
-      uri"/user/repos",
+      uri"user/repos",
       newRepo
     )
 
@@ -45,7 +45,7 @@ object Repositories {
     RequestConstructor.runRequestWithBody[F, NewRepo, Repo](
       auth.some,
       Method.POST,
-      uri"/orgs" / org / "repos",
+      uri"orgs" / org / "repos",
       newRepo
     )
 
@@ -58,7 +58,7 @@ object Repositories {
   RequestConstructor.runRequestWithBody[F, EditRepo, Repo](
     auth.some,
     Method.PATCH,
-    uri"/repos" / owner / repo,
+    uri"repos" / owner / repo,
     editRepo
   )
 
