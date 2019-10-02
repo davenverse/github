@@ -23,7 +23,7 @@ object Content {
     RequestConstructor.runRequestWithNoBody[F, Content](
       auth,
       Method.GET,
-      (uri"/repos" / owner / repo / "contents" / path)
+      (uri"repos" / owner / repo / "contents" / path)
         .withOptionQueryParam("ref", ref)
     )
 
@@ -35,7 +35,7 @@ object Content {
     RequestConstructor.runRequestWithNoBody[F, Content](
       auth,
       Method.GET,
-      uri"/repos" / owner / repo / "readme"
+      uri"repos" / owner / repo / "readme"
     )
 
   def createFile[F[_]: Sync](
@@ -46,7 +46,7 @@ object Content {
   ) = RequestConstructor.runRequestWithBody[F, CreateFile, ContentResult](
     auth.some,
     Method.PUT,
-    uri"/repos" / owner /  repo / "contents" / createFile.path,
+    uri"repos" / owner /  repo / "contents" / createFile.path,
     createFile
   )
 
@@ -58,7 +58,7 @@ object Content {
   ) = RequestConstructor.runRequestWithBody[F, UpdateFile, ContentResult](
     auth.some,
     Method.PUT,
-    uri"/repos" / owner /  repo / "contents" / updateFile.path,
+    uri"repos" / owner /  repo / "contents" / updateFile.path,
     updateFile
   )
 
@@ -70,7 +70,7 @@ object Content {
   ) = RequestConstructor.runRequestWithBody[F, DeleteFile, Unit](
     auth.some,
     Method.DELETE,
-    uri"/repos" / owner /  repo / "contents" / deleteFile.path,
+    uri"repos" / owner /  repo / "contents" / deleteFile.path,
     deleteFile
   )
   
