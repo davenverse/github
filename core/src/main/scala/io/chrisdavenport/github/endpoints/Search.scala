@@ -14,6 +14,10 @@ import io.chrisdavenport.github.internals.RequestConstructor
 
 object Search {
 
+  /**
+   * Repository Search Endpoint
+   * https://developer.github.com/v3/search/#search-repositories
+   */
   def repository[F[_]: Sync](
     q: String,
     sort: Option[Sort],
