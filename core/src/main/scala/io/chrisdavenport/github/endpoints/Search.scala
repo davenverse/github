@@ -23,7 +23,7 @@ object Search {
     RequestConstructor.runRequestWithNoBody[F, SearchResult[Repo]](
       auth,
       Method.GET,
-      (uri"/search" / "repositories")
+      (uri"search" / "repositories")
         .withQueryParam("q", q)
         .withOptionQueryParam("sort", sort.flatMap(Sort.toOptionalParam))
         .withOptionQueryParam("order", order.flatMap(Order.toOptionalParam))
