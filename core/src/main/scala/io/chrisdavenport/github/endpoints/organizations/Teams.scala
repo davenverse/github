@@ -24,7 +24,7 @@ object Teams {
   ) = RequestConstructor.runRequestWithBody[F, AddTeamRepoPermission, Unit](
     auth.some,
     Method.PUT,
-    uri"/teams" / teamId.toString / "repos" / organization / repoName,
+    uri"teams" / teamId.toString / "repos" / organization / repoName,
     AddTeamRepoPermission(permission)
   )
 }
