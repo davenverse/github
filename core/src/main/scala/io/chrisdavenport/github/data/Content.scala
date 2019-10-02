@@ -175,7 +175,7 @@ object Content {
         "path" -> a.path.asJson,
         "message" -> a.message.asJson,
         "content" -> a.content.asJson,
-        "sha" -> a.author.asJson,
+        "sha" -> a.sha.asJson,
         "branch" -> a.branch.asJson,
         "author" -> a.author.asJson,
         "committer" -> a.committer.asJson
