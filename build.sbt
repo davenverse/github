@@ -5,7 +5,7 @@ val catsV = "2.0.0"
 val catsEffectV = "2.0.0"
 val fs2V = "1.1.0-M1"
 val http4sV = "0.21.0-M5"
-val circeV = "0.12.0-RC4"
+val circeV = "0.12.1"
 val catsEffectTestingV = "0.2.0"
 // val log4catsV = "1.0.0-RC3"
 
