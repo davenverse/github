@@ -89,7 +89,7 @@ object RequestConstructor {
       .void
       .stream
 
-  private val GITHUB_URI: Uri = uri"https://api.github.com"
+  private val GITHUB_URI: Uri = uri"https://api.github.com/"
 
   private def baseUrl(auth: Option[Auth]): Uri = auth match {
     case Some(EnterpriseOAuth(apiEndpoint, _)) => apiEndpoint
