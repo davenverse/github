@@ -2,7 +2,6 @@ package io.chrisdavenport.github.data
 
 import io.circe.Decoder
 import cats.implicits._
-import io.chrisdavenport.github.data.SearchResult.Order.{Ascending, Descending}
 
 case class SearchResult[A](totalCount: Int, incompleteResults: Boolean, items: List[A])
 
