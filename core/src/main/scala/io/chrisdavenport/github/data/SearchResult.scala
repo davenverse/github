@@ -14,27 +14,6 @@ object SearchResult {
       cursor.downField("items").as[List[A]]
     ).mapN(SearchResult.apply)
 
-  sealed trait Sort
-
-  object Sort {
-
-    case object Stars extends Sort
-    case object Forks extends Sort
-    case object HelpWantedIssues extends Sort
-    case object Updated extends Sort
-    case object BestMatch extends Sort
-
-    def toOptionalParam(sort: Sort): Option[String] =
-      sort match {
-        case Stars => Some("stars")
-        case Forks => Some("forks")
-        case HelpWantedIssues => Some("help-wanted-issues")
-        case Updated => Some("updated")
-        case BestMatch => None
-      }
-
-  }
-
   sealed trait Order
 
   object Order {
@@ -47,6 +26,46 @@ object SearchResult {
         case Ascending => Some("asc")
         case Descending => Some("desc")
       }
+
+  }
+
+
+  sealed trait Sort
+
+  object Sort {
+
+    case object BestMatch extends Repos.Sort with Users.Sort
+    case object Stars extends Repos.Sort
+    case object Forks extends Repos.Sort
+    case object HelpWantedIssues extends Repos.Sort
+    case object Updated extends Repos.Sort
+    case object Followers extends Users.Sort
+    case object Repositories extends Users.Sort
+    case object Joined extends Users.Sort
+
+    def toOptionalParam(sort: Sort): Option[String] =
+      sort match {
+        case BestMatch => None
+        case Stars => Some("stars")
+        case Forks => Some("forks")
+        case HelpWantedIssues => Some("help-wanted-issues")
+        case Updated => Some("updated")
+        case Followers => Some("followers")
+        case Repositories => Some("repositories")
+        case Joined => Some("joined")
+      }
+
+  }
+
+  object Repos {
+
+    sealed trait Sort extends SearchResult.Sort
+
+  }
+
+  object Users {
+
+    sealed trait Sort extends SearchResult.Sort
 
   }
 

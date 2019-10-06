@@ -1,9 +1,6 @@
 package io.chrisdavenport.github.data
 
-import cats.implicits._
 import org.http4s.Uri
-import org.http4s.circe._
-import java.time.Instant
 import io.circe._
 import io.circe.syntax._
 
