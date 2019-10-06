@@ -7,8 +7,7 @@ import io.chrisdavenport.github.data.Repositories._
 import org.http4s.implicits._
 import org.http4s.client.Client
 import io.chrisdavenport.github.Auth
-import io.chrisdavenport.github.data.SearchResult
-import io.chrisdavenport.github.data.SearchResult.{Order, Sort}
+import io.chrisdavenport.github.data.{Order, SearchResult, Sort}
 import io.chrisdavenport.github.data.Users.User
 import io.chrisdavenport.github.internals.GithubMedia._
 import io.chrisdavenport.github.internals.RequestConstructor
@@ -26,7 +25,7 @@ object Search {
    */
   def repository[F[_]: Sync](
     q: String,
-    sort: Option[SearchResult.Repos.Sort],
+    sort: Option[Sort.Repository],
     order: Option[Order],
     auth: Option[Auth]
   ): Kleisli[Stream[F, *], Client[F], SearchResult[Repo]] =
@@ -49,7 +48,7 @@ object Search {
    */
   def users[F[_]: Sync](
     q: String,
-    sort: Option[SearchResult.Users.Sort],
+    sort: Option[Sort.User],
     order: Option[Order],
     auth: Option[Auth]
   ): Kleisli[Stream[F, *], Client[F], SearchResult[User]] =

@@ -3,7 +3,7 @@ package io.chrisdavenport.github.endpoints
 import org.specs2.mutable.Specification
 import cats.effect._
 import cats.effect.specs2.CatsEffect
-import io.chrisdavenport.github.data.SearchResult.Sort.Stars
+import io.chrisdavenport.github.data.Sort.Stars
 import io.chrisdavenport.github.endpoints.utils.PaginatedJsonFiles
 import org.http4s._
 import org.http4s.client._
@@ -43,7 +43,6 @@ class SearchRepositorySpec extends Specification with CatsEffect with PaginatedJ
         }
     }
 
-    // seems to ignore actual errors, that seems incorrect
     "fail when not being able to fetch a page" in {
       Search.repository[IO]("scala", Some(Stars), None, None)
         .run(Client.fromHttpApp(paginatedEndpoint(numPages = 4)))

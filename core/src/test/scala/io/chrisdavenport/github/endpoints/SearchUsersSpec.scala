@@ -2,7 +2,7 @@ package io.chrisdavenport.github.endpoints
 
 import cats.effect._
 import cats.effect.specs2.CatsEffect
-import io.chrisdavenport.github.data.SearchResult.Sort.Repositories
+import io.chrisdavenport.github.data.Sort.Repositories
 import io.chrisdavenport.github.endpoints.utils.PaginatedJsonFiles
 import org.http4s._
 import org.http4s.client._
