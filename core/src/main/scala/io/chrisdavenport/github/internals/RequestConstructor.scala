@@ -22,7 +22,7 @@ object RequestConstructor {
     method: Method,
     extendedUri: Uri,
   ): Kleisli[F, Client[F], B] =
-    runRequest[F, Unit, B](auth, method, extendedUri, None)
+    runRequestWithNoBodyAccept(auth, method, extendedUri, GithubMediaType.`application/vnd.github.v3+json`)
 
   def runRequestWithBody[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
     auth: Option[Auth],
@@ -30,17 +30,36 @@ object RequestConstructor {
     extendedUri: Uri,
     body: A
   ): Kleisli[F, Client[F], B] =
-    runRequest[F, A, B](auth, method, extendedUri, body.some)
+    runRequestWithBodyAccept(auth, method, extendedUri, body, GithubMediaType.`application/vnd.github.v3+json`)
+
+  def runRequestWithNoBodyAccept[F[_]: Sync, B: EntityDecoder[F, ?]]
+  (
+    auth: Option[Auth],
+    method: Method,
+    extendedUri: Uri,
+    accept: GithubMediaType
+  ): Kleisli[F, Client[F], B] =
+    runRequest[F, Unit, B](auth, method, extendedUri, None, accept)
+
+  def runRequestWithBodyAccept[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
+    auth: Option[Auth],
+    method: Method,
+    extendedUri: Uri,
+    body: A,
+    accept: GithubMediaType
+  ): Kleisli[F, Client[F], B] =
+    runRequest[F, A, B](auth, method, extendedUri, body.some, accept)
 
   def runRequest[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
-    body: Option[A]
+    body: Option[A],
+    accept: GithubMediaType
   ):  Kleisli[F, Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
     val baseReq = Request[F](method = method, uri = uri)
-      .withHeaders(extraHeaders)
+      .withHeaders(extraHeaders(accept))
     val req2 = auth.fold(baseReq)(setAuth(_)(baseReq))
     val req = body.fold(req2)(a => req2.withEntity(a))
     c.expect[B](req)
@@ -52,17 +71,24 @@ object RequestConstructor {
         case Some(Link(uri, Some("next"), _, _, _)) => uri
       }.headOption
     } yield next
-  } 
+  }
 
   def runPaginatedRequest[F[_]: Sync, B: EntityDecoder[F, ?]](
     auth: Option[Auth],
     extendedUri: Uri,
+  ):  Kleisli[Stream[F, ?], Client[F], B] =
+    runPaginatedRequestAccept(auth, extendedUri, GithubMediaType.`application/vnd.github.v3+json`)
+
+  def runPaginatedRequestAccept[F[_]: Sync, B: EntityDecoder[F, ?]](
+    auth: Option[Auth],
+    extendedUri: Uri,
+    accept: GithubMediaType
   ):  Kleisli[Stream[F, ?], Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
 
     unfoldLoopEval(uri){uri => 
       val baseReq = Request[F](method = Method.GET, uri = uri)
-        .withHeaders(extraHeaders)
+        .withHeaders(extraHeaders(accept))
       val req = auth.fold(baseReq)(setAuth(_)(baseReq))
       c.run(req).use{resp => 
           resp.as[B].map{
@@ -105,8 +131,8 @@ object RequestConstructor {
       req.withHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, token)))
   }
 
-  private val extraHeaders: Headers = Headers.of(
+  private def extraHeaders(accept: GithubMediaType): Headers = Headers.of(
     Header("User-Agent", "github.scala/" ++ _root_.io.chrisdavenport.github.BuildInfo.version),
-    Header("Accept", "application/vnd.github.v3+json")
+    Header("Accept", GithubMediaType.render(accept))
   )
 }
