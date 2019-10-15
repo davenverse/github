@@ -69,6 +69,9 @@ object Repositories {
     )
   }
 
+  /**
+   * Deleting a repository requires admin access. If OAuth is used, the delete_repo scope is required.
+   **/
   def delete[F[_]: Sync](
     owner: String,
     repo: String,
