@@ -16,13 +16,11 @@ object Main extends IOApp {
 
       auth = OAuth(authLine)
       
-      // out <- Resource.liftF(
-      //   Users.getAllUsers[IO](None, None)
-      //   .run(c)
-      //   .evalTap(s => IO(println(s)))
-      //   .compile
-      //   .drain
-      // )
+      _ <- Resource.liftF(
+        endpoints.miscellaneous.RateLimit.rateLimit[IO](auth.some)
+        .run(c)
+        .flatTap(a => IO(println(a)))
+      )
       // out <- liftPrint(endpoints.Users.userInfoAuthenticatedUser[IO](auth).run(c))
       // out <- liftPrint(endpoints.Users.ownerInfoFor[IO]("http4s", auth.some).run(c))
       // _ <- liftPrint(endpoints.Repositories.repository[IO]("http4s", "http4s", auth.some).run(c))
