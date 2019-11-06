@@ -17,10 +17,19 @@ object Main extends IOApp {
       auth = OAuth(authLine)
       
       _ <- Resource.liftF(
-        endpoints.miscellaneous.RateLimit.rateLimit[IO](auth.some)
-        .run(c)
+        endpoints.gitdata.Trees.getTree[IO](
+          "ChristopherDavenport",
+          "github",
+          "17dafee2df113441127dad4fba9e0be65e82c4b3",
+          auth.some
+        ).run(c)
         .flatTap(a => IO(println(a)))
       )
+      // _ <- Resource.liftF(
+      //   endpoints.miscellaneous.RateLimit.rateLimit[IO](auth.some)
+      //   .run(c)
+      //   .flatTap(a => IO(println(a)))
+      // )
       // out <- liftPrint(endpoints.Users.userInfoAuthenticatedUser[IO](auth).run(c))
       // out <- liftPrint(endpoints.Users.ownerInfoFor[IO]("http4s", auth.some).run(c))
       // _ <- liftPrint(endpoints.Repositories.repository[IO]("http4s", "http4s", auth.some).run(c))
