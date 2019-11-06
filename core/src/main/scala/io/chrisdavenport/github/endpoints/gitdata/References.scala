@@ -134,5 +134,4 @@ object References {
       uri"repos" / owner / repo / "git" / "ref" / ref
     )
 
-    
 }

@@ -373,6 +373,51 @@ object GitData {
     }
   }
 
+  final case class GitTag(
+    tag: String,
+    sha: String,
+    uri: Uri,
+    message: String,
+    tagger: GitUser,
+    `object`: GitObject
+  )
+  object GitTag {
+    val decoder = new Decoder[GitTag]{
+      def apply(c: HCursor): Decoder.Result[GitTag] = 
+        (
+          c.downField("tag").as[String],
+          c.downField("sha").as[String],
+          c.downField("url").as[Uri],
+          c.downField("message").as[String],
+          c.downField("tagger").as[GitUser],
+          c.downField("object").as[GitObject]
+        ).mapN(GitTag.apply)
+    }
+  }
+
+  final case class CreateTag(
+    tag: String,
+    message: String,
+    objectSha: String,
+    `type`: GitObjectType,
+    tagger: Option[GitUser]
+  )
+  object CreateTag {
+    implicit val encoder = new Encoder[CreateTag]{
+      def apply(a: CreateTag): Json = Json.obj(
+        "tag" -> a.tag.asJson,
+        "message" -> a.message.asJson,
+        "object" -> a.objectSha.asJson,
+        "type" -> a.`type`.asJson,
+        "tagger" -> a.tagger.asJson
+      ).dropNullValues
+    }
+  }
+
+
+
+
+
 
 
 
