@@ -5,6 +5,7 @@ import org.http4s._
 import org.http4s.circe._
 import io.circe._
 import io.circe.syntax._
+import java.time.Instant
 
 object GitData {
   sealed trait Encoding extends Product with Serializable
@@ -202,7 +203,7 @@ object GitData {
         case CreateGitTreeBlob(path, content, mode) => 
           Json.obj(
             "path" -> path.asJson,
-            "type" -> "blob".asJson,
+            "type" -> (GitTreeType.Blob : GitTreeType).asJson,
             "mode" -> mode.merge.asJson,
             "content" -> content.asJson
           )
@@ -242,6 +243,77 @@ object GitData {
     }
   }
 
+
+  final case class GitUser(
+    name: String,
+    email: String,
+    date: Instant
+  )
+  object GitUser {
+    implicit val decoder = new Decoder[GitUser]{
+      def apply(c: HCursor): Decoder.Result[GitUser] = 
+        (
+          c.downField("name").as[String],
+          c.downField("email").as[String],
+          c.downField("date").as[Instant]
+        ).mapN(GitUser.apply)
+    }
+    implicit val encoder = new Encoder[GitUser]{
+      def apply(a: GitUser): Json = Json.obj(
+        "name" -> a.name.asJson,
+        "email" -> a.email.asJson,
+        "date" -> a.date.asJson
+      )
+    }
+  }
+
+  final case class GitCommit(
+    message: String,
+    uri: Uri,
+    committer: GitUser,
+    author: GitUser,
+    sha: Option[String],
+    tree: Tree,
+    parents: List[Tree]
+  )
+  object GitCommit {
+    implicit val decoder = new Decoder[GitCommit]{
+      def apply(c: HCursor): Decoder.Result[GitCommit] = 
+        (
+          c.downField("message").as[String],
+          c.downField("url").as[Uri],
+          c.downField("committer").as[GitUser],
+          c.downField("author").as[GitUser],
+          c.downField("sha").as[Option[String]],
+          c.downField("tree").as[Tree],
+          c.downField("parrent").as[List[Tree]],
+        ).mapN(GitCommit.apply)
+    }
+  }
+
+  final case class CreateCommit(
+    message: String,
+    treeSha: String,
+    parents: List[String],
+    author: Option[GitUser],
+    committer: Option[GitUser],
+    signature: Option[String]
+  )
+  object CreateCommit {
+    def simple(message: String, treeSha: String, parents: List[String]): CreateCommit =
+      CreateCommit(message, treeSha, parents, None, None, None)
+
+    implicit val encoder = new Encoder[CreateCommit]{
+      def apply(a: CreateCommit): Json = Json.obj(
+        "message" -> a.message.asJson,
+        "tree" -> a.treeSha.asJson,
+        "parents" -> a.parents.asJson,
+        "author" -> a.author.asJson,
+        "committer" -> a.committer.asJson,
+        "signature" -> a.signature.asJson
+      ).dropNullValues
+    }
+  }
 
 
 
