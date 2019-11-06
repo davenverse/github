@@ -68,14 +68,14 @@ object GitData {
   }
 
 
-  sealed trait GitTreeType extends Product with Serializable
-  object GitTreeType {
-    case object Blob extends GitTreeType
-    case object Commit extends GitTreeType
-    case object Tree extends GitTreeType
+  sealed trait GitObjectType extends Product with Serializable
+  object GitObjectType {
+    case object Blob extends GitObjectType
+    case object Commit extends GitObjectType
+    case object Tree extends GitObjectType
 
-    implicit val decoder = new Decoder[GitTreeType]{
-      def apply(c: HCursor): Decoder.Result[GitTreeType] =
+    implicit val decoder = new Decoder[GitObjectType]{
+      def apply(c: HCursor): Decoder.Result[GitObjectType] =
         c.as[String].flatMap{
           case "blob" => Right(Blob)
           case "commit" => Right(Commit)
@@ -84,8 +84,8 @@ object GitData {
         }
     }
 
-    implicit val encoder = new Encoder[GitTreeType]{
-      def apply(a: GitTreeType): Json = a match {
+    implicit val encoder = new Encoder[GitObjectType]{
+      def apply(a: GitObjectType): Json = a match {
         case Blob => Json.fromString("blob")
         case Commit => Json.fromString("commit")
         case Tree => Json.fromString("tree")
@@ -128,7 +128,7 @@ object GitData {
   final case class GitTree(
     path: String,
     sha: String,
-    `type`: GitTreeType,
+    `type`: GitObjectType,
     mode: GitMode,
     uri: Option[Uri],
     size: Option[Int],
@@ -139,7 +139,7 @@ object GitData {
         (
           c.downField("path").as[String],
           c.downField("sha").as[String],
-          c.downField("type").as[GitTreeType],
+          c.downField("type").as[GitObjectType],
           c.downField("mode").as[GitMode],
           c.downField("url").as[Option[Uri]],
           c.downField("size").as[Option[Int]]
@@ -181,7 +181,7 @@ object GitData {
     final case class CreateGitTreeSha(
       path: String,
       sha: Option[String],
-      `type`: GitTreeType,
+      `type`: GitObjectType,
       mode: GitMode
     ) extends CreateGitTree
     
@@ -203,7 +203,7 @@ object GitData {
         case CreateGitTreeBlob(path, content, mode) => 
           Json.obj(
             "path" -> path.asJson,
-            "type" -> (GitTreeType.Blob : GitTreeType).asJson,
+            "type" -> (GitObjectType.Blob : GitObjectType).asJson,
             "mode" -> mode.merge.asJson,
             "content" -> content.asJson
           )
@@ -312,6 +312,64 @@ object GitData {
         "committer" -> a.committer.asJson,
         "signature" -> a.signature.asJson
       ).dropNullValues
+    }
+  }
+
+  final case class GitObject(
+    `type`: GitObjectType, 
+    sha: String,
+    uri: Uri
+  )
+  object GitObject {
+    implicit val decoder = new Decoder[GitObject]{
+      def apply(c: HCursor): Decoder.Result[GitObject] = 
+        (
+          c.downField("type").as[GitObjectType],
+          c.downField("sha").as[String],
+          c.downField("url").as[Uri]
+        ).mapN(GitObject.apply)
+    }
+  }
+
+  final case class GitReference(
+    ref: String,
+    uri: Uri,
+    `object`: GitObject
+  )
+  object GitReference{
+    implicit val decoder = new Decoder[GitReference]{
+      def apply(c: HCursor): Decoder.Result[GitReference] =
+        (
+          c.downField("ref").as[String],
+          c.downField("url").as[Uri],
+          c.downField("object").as[GitObject]
+        ).mapN(GitReference.apply)
+    }
+  }
+
+  final case class CreateReference(
+    ref: String,
+    sha: String
+  )
+  object CreateReference {
+    implicit val encoder = new Encoder[CreateReference]{
+      def apply(a: CreateReference): Json = Json.obj(
+        "ref" -> a.ref.asJson,
+        "sha" -> a.sha.asJson
+      )
+    }
+  }
+
+  final case class UpdateReference(
+    sha: String,
+    force: Boolean
+  )
+  object UpdateReference {
+    implicit val encoder = new Encoder[UpdateReference]{
+      def apply(a: UpdateReference): Json = Json.obj(
+        "sha" -> a.sha.asJson,
+        "force" -> a.force.asJson
+      )
     }
   }
 
