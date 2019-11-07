@@ -26,6 +26,31 @@ object Main extends IOApp {
         .flatTap(a => IO(println(a)))
       )
       // _ <- Resource.liftF(
+      //   endpoints.gitdata.Trees.createTree[IO](
+      //     "ChristopherDavenport",
+      //     "test-repo1",
+
+      //     data.GitData.CreateTree(
+      //       List(
+      //         data.GitData.CreateGitTree.CreateGitTreeBlob(
+      //           "README.md",
+      //           "# Test Readme Created By App",
+      //           Either.right(data.GitData.GitMode.File)
+      //         ),
+      //         // data.GitData.CreateGitTree.CreateGitTreeBlob(
+      //         //   "subdir/README.md",
+      //         //   "# Test Readme Created By App",
+      //         //   Either.right(data.GitData.GitMode.File)
+      //         // ),
+      //       ),
+      //       None
+      //     ),
+      //     auth
+
+      //   ).run(c)
+      //   .flatTap(a => IO(println(a)))
+      // )
+      // _ <- Resource.liftF(
       //   endpoints.miscellaneous.RateLimit.rateLimit[IO](auth.some)
       //   .run(c)
       //   .flatTap(a => IO(println(a)))

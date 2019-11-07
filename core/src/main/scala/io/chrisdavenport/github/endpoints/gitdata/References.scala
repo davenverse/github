@@ -131,7 +131,7 @@ object References {
     RequestConstructor.runRequestWithNoBody[F, Unit](
       auth.some,
       Method.DELETE,
-      uri"repos" / owner / repo / "git" / "ref" / ref
+      uri"repos" / owner / repo / "git" / "refs" / ref
     )
 
 }

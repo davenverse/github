@@ -382,7 +382,7 @@ object GitData {
     `object`: GitObject
   )
   object GitTag {
-    val decoder = new Decoder[GitTag]{
+    implicit val decoder = new Decoder[GitTag]{
       def apply(c: HCursor): Decoder.Result[GitTag] = 
         (
           c.downField("tag").as[String],

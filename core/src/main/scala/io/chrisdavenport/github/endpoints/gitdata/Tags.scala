@@ -6,7 +6,6 @@ import cats.effect._
 import org.http4s._
 import org.http4s.client._
 import org.http4s.implicits._
-import fs2.Stream
 
 import io.chrisdavenport.github.Auth
 import io.chrisdavenport.github.internals.GithubMedia._
@@ -26,11 +25,11 @@ object Tags {
     repo: String,
     tagSha: String,
     auth: Option[Auth]
-  ): Kleisli[F, Client[F], Tag] = 
-    RequestConstructor.runRequestWithNoBody[F, Tag](
+  ): Kleisli[F, Client[F], GitTag] = 
+    RequestConstructor.runRequestWithNoBody[F, GitTag](
       auth,
       Method.GET,
-      uri"repos" / owner / repo / "git" / "tags" / tagsha
+      uri"repos" / owner / repo / "git" / "tags" / tagSha
     )
 
   /**
@@ -50,8 +49,8 @@ object Tags {
     repo: String,
     createTag: CreateTag,
     auth: Auth
-  ): Kleisli[F, Client[F], Tag] = 
-    RequestConstructor.runRequestWithBody[F, CreateTag, Tag](
+  ): Kleisli[F, Client[F], GitTag] = 
+    RequestConstructor.runRequestWithBody[F, CreateTag, GitTag](
       auth.some,
       Method.POST,
       uri"repos" / owner / repo / "git" / "tags",
@@ -61,14 +60,14 @@ object Tags {
   /**
    * Like [[createTag]] except that it follows up by also creating the tag
    **/
-  def createTagFull[F[_]](
+  def createTagFull[F[_]: Sync](
     owner: String,
     repo: String,
     createTag: CreateTag,
     auth: Auth
-  ): Kleisli[F, Client[F], (Tag, GitReference)] = 
+  ): Kleisli[F, Client[F], (GitTag, GitReference)] = 
     for {
-      tag <- References.createTag[F](
+      tag <- Tags.createTag[F](
         owner,
         repo,
         createTag, 
@@ -80,7 +79,8 @@ object Tags {
         CreateReference(
           "refs/tags/" |+| createTag.tag,
           createTag.objectSha
-        )
+        ),
+        auth
       )
     } yield (tag, ref)
 
