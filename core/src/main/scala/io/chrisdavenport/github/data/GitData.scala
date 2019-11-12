@@ -267,14 +267,29 @@ object GitData {
     }
   }
 
+  final case class CommitTree(
+    sha: String,
+    uri: Uri
+  )
+
+  object CommitTree {
+    implicit val decoder = new Decoder[CommitTree]{
+      def apply(c: HCursor): Decoder.Result[CommitTree] = 
+        (
+          c.downField("sha").as[String],
+          c.downField("url").as[Uri]
+        ).mapN(CommitTree.apply)
+    }
+  }
+
   final case class GitCommit(
     message: String,
     uri: Uri,
     committer: GitUser,
     author: GitUser,
-    sha: Option[String],
-    tree: Tree,
-    parents: List[Tree]
+    sha: String,
+    tree: CommitTree,
+    parents: List[CommitTree]
   )
   object GitCommit {
     implicit val decoder = new Decoder[GitCommit]{
@@ -284,9 +299,9 @@ object GitData {
           c.downField("url").as[Uri],
           c.downField("committer").as[GitUser],
           c.downField("author").as[GitUser],
-          c.downField("sha").as[Option[String]],
-          c.downField("tree").as[Tree],
-          c.downField("parrent").as[List[Tree]],
+          c.downField("sha").as[String],
+          c.downField("tree").as[CommitTree],
+          c.downField("parents").as[List[CommitTree]],
         ).mapN(GitCommit.apply)
     }
   }

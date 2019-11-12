@@ -11,7 +11,7 @@ val catsEffectTestingV = "0.3.0"
 
 val specs2V = "4.8.0"
 
-val kindProjectorV = "0.10.3"
+val kindProjectorV = "0.11.0"
 val betterMonadicForV = "0.3.1"
 
 lazy val `github` = project.in(file("."))
@@ -56,7 +56,7 @@ lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
 
   scalaVersion := "2.13.0",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.9"),
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
   ThisBuild / turbo := true,
   Global / cancelable := true,
 
@@ -72,7 +72,7 @@ lazy val commonSettings = Seq(
       "-Ywarn-unused:imports",
     ),
 
-  addCompilerPlugin("org.typelevel" % "kind-projector" % kindProjectorV cross CrossVersion.binary),
+  addCompilerPlugin("org.typelevel" %% "kind-projector"     % kindProjectorV cross CrossVersion.full),
   addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % betterMonadicForV),
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
