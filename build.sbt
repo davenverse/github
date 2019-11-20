@@ -7,7 +7,8 @@ val fs2V = "2.0.1"
 val http4sV = "0.21.0-M5"
 val circeV = "0.12.3"
 val catsEffectTestingV = "0.3.0"
-// val log4catsV = "1.0.0-RC3"
+val log4catsV = "1.0.1"
+val logbackClassicV = "1.2.3"
 
 val specs2V = "4.8.0"
 
@@ -36,6 +37,8 @@ lazy val example = project.in(file("example"))
     libraryDependencies ++= Seq(
       // For Testing As I go
     "org.http4s"                  %% "http4s-blaze-client"        % http4sV,
+    "io.chrisdavenport"           %% "log4cats-slf4j"             % log4catsV,
+    "ch.qos.logback"              % "logback-classic"               % logbackClassicV,
     )
   )
 
@@ -90,7 +93,7 @@ lazy val commonSettings = Seq(
     // "io.circe"                    %% "circe-parser"               % circeV,
 
     // "io.chrisdavenport"           %% "log4cats-core"              % log4catsV,
-    // "io.chrisdavenport"           %% "log4cats-slf4j"             % log4catsV,
+    // 
     // "io.chrisdavenport"           %% "log4cats-extras"            % log4catsV,
     // "io.chrisdavenport"           %% "log4cats-testing"           % log4catsV     % Test,
     
