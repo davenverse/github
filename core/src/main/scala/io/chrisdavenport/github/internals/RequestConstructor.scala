@@ -6,7 +6,7 @@ import cats.implicits._
 import fs2._
 import org.http4s._
 import org.http4s.implicits._
-import org.http4s.client.{Client, UnexpectedStatus}
+import org.http4s.client.Client
 import org.http4s.headers.Authorization
 import _root_.io.chrisdavenport.github._
 import cats.data.Kleisli
@@ -44,8 +44,17 @@ object RequestConstructor {
       .withHeaders(extraHeaders)
     val req2 = auth.fold(baseReq)(setAuth(_)(baseReq))
     val req = body.fold(req2)(a => req2.withEntity(a))
-    c.expect[B](req)
+    c.expectOr[B](req)(resp => 
+      
+      resp.bodyAsText.compile.string.flatMap(body => 
+        Sync[F].raiseError(new GithubError(resp.status, body))
+      )
+    )
   }
+
+  final class GithubError private[RequestConstructor] (val status: Status, val body: String) extends Exception(
+    s"Github Error Occured- Status:$status Body: $body"
+  )
 
   private val RE_LINK: Regex = "[\\s]*<(.*)>; rel=\"(.*)\"".r
 
@@ -74,7 +83,9 @@ object RequestConstructor {
             (_, getNextUri(resp))
           }
         else
-          MonadError[F, Throwable].raiseError[(B, Option[Uri])](UnexpectedStatus(resp.status))
+          resp.bodyAsText.compile.string.flatMap(body => 
+            Sync[F].raiseError[(B, Option[Uri])](new GithubError(resp.status, body))
+          )
       }
     }
   }
