@@ -8,10 +8,11 @@ import org.http4s._
 import org.http4s.implicits._
 import org.http4s.client.Client
 import org.http4s.headers.Authorization
-
 import _root_.io.chrisdavenport.github._
 import cats.data.Kleisli
-import org.http4s.headers.Link
+import org.http4s._
+
+import scala.util.matching.Regex
 
 
 object RequestConstructor {
@@ -43,15 +44,28 @@ object RequestConstructor {
       .withHeaders(extraHeaders)
     val req2 = auth.fold(baseReq)(setAuth(_)(baseReq))
     val req = body.fold(req2)(a => req2.withEntity(a))
-    c.expect[B](req)
+    c.expectOr[B](req)(resp => 
+      
+      resp.bodyAsText.compile.string.flatMap(body => 
+        Sync[F].raiseError(new GithubError(resp.status, body))
+      )
+    )
   }
 
+  final class GithubError private[RequestConstructor] (val status: Status, val body: String) extends Exception(
+    s"Github Error Occured- Status:$status Body: $body"
+  )
+
+  private val RE_LINK: Regex = "[\\s]*<(.*)>; rel=\"(.*)\"".r
+
   private def getNextUri[F[_]: MonadError[*[_], Throwable]](r: Response[F]): Option[Uri] = {
-    for {
-      next <- r.headers.toList.map(Link.matchHeader).collect{
-        case Some(Link(uri, Some("next"), _, _, _)) => uri
-      }.headOption
-    } yield next
+    r.headers.toList.flatMap {
+      case Header(name, value) if name == "Link".ci => value.split(",").toList
+      case _ => Nil
+    }.collectFirstSome {
+      case RE_LINK(uri, "next") => Uri.fromString(uri).toOption
+      case _ => None
+    }
   } 
 
   def runPaginatedRequest[F[_]: Sync, B: EntityDecoder[F, ?]](
@@ -59,23 +73,25 @@ object RequestConstructor {
     extendedUri: Uri,
   ):  Kleisli[Stream[F, ?], Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
-
-    unfoldLoopEval(uri){uri => 
+    unfoldLoopEval(uri){ uri =>
       val baseReq = Request[F](method = Method.GET, uri = uri)
         .withHeaders(extraHeaders)
       val req = auth.fold(baseReq)(setAuth(_)(baseReq))
-      c.run(req).use{resp => 
-          resp.as[B].map{
+      c.fetch(req) { resp =>
+        if(resp.status.isSuccess)
+          resp.as[B].map {
             (_, getNextUri(resp))
           }
-        }
+        else
+          resp.bodyAsText.compile.string.flatMap(body => 
+            Sync[F].raiseError[(B, Option[Uri])](new GithubError(resp.status, body))
+          )
+      }
     }
   }
 
 
   //These two will be in the next version of fs2
-  
-
   
   /** Like [[unfoldLoop]], but takes an effectful function. */
   private def unfoldLoopEval[F[_], S, O](s: S)(f: S => F[(O, Option[S])]): Stream[F, O] =
@@ -83,7 +99,8 @@ object RequestConstructor {
       .loop[F, O, S](
         s =>
           Pull.eval(f(s)).flatMap {
-            case (o, sOpt) => Pull.output1(o) >> Pull.pure(sOpt)
+            case (o, sOpt) =>
+              Pull.output1(o) >> Pull.pure(sOpt)
           }
       )(s)
       .void
@@ -109,4 +126,5 @@ object RequestConstructor {
     Header("User-Agent", "github.scala/" ++ _root_.io.chrisdavenport.github.BuildInfo.version),
     Header("Accept", "application/vnd.github.v3+json")
   )
+
 }

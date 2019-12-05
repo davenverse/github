@@ -3,15 +3,16 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 val catsV = "2.0.0"
 val catsEffectV = "2.0.0"
-val fs2V = "2.0.1"
+val fs2V = "2.1.0"
 val http4sV = "0.21.0-M5"
-val circeV = "0.12.1"
+val circeV = "0.12.3"
 val catsEffectTestingV = "0.3.0"
-// val log4catsV = "1.0.0-RC3"
+val log4catsV = "1.0.1"
+val logbackClassicV = "1.2.3"
 
-val specs2V = "4.7.1"
+val specs2V = "4.8.1"
 
-val kindProjectorV = "0.10.3"
+val kindProjectorV = "0.11.0"
 val betterMonadicForV = "0.3.1"
 
 lazy val `github` = project.in(file("."))
@@ -36,6 +37,8 @@ lazy val example = project.in(file("example"))
     libraryDependencies ++= Seq(
       // For Testing As I go
     "org.http4s"                  %% "http4s-blaze-client"        % http4sV,
+    "io.chrisdavenport"           %% "log4cats-slf4j"             % log4catsV,
+    "ch.qos.logback"              % "logback-classic"               % logbackClassicV,
     )
   )
 
@@ -56,7 +59,7 @@ lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
 
   scalaVersion := "2.13.0",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.9"),
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.10"),
   ThisBuild / turbo := true,
   Global / cancelable := true,
 
@@ -72,7 +75,7 @@ lazy val commonSettings = Seq(
       "-Ywarn-unused:imports",
     ),
 
-  addCompilerPlugin("org.typelevel" % "kind-projector" % kindProjectorV cross CrossVersion.binary),
+  addCompilerPlugin("org.typelevel" %% "kind-projector"     % kindProjectorV cross CrossVersion.full),
   addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % betterMonadicForV),
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
@@ -90,7 +93,7 @@ lazy val commonSettings = Seq(
     // "io.circe"                    %% "circe-generic"              % circeV,
 
     // "io.chrisdavenport"           %% "log4cats-core"              % log4catsV,
-    // "io.chrisdavenport"           %% "log4cats-slf4j"             % log4catsV,
+    // 
     // "io.chrisdavenport"           %% "log4cats-extras"            % log4catsV,
     // "io.chrisdavenport"           %% "log4cats-testing"           % log4catsV     % Test,
     
