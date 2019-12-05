@@ -3,7 +3,9 @@ package io.chrisdavenport.github.endpoints.utils
 import io.circe.Json
 import io.circe.parser.parse
 import org.http4s.Request
+
 import scala.io.Source
+import scala.util.Try
 
 /**
  * Can be mixed-in to load json contents from files
@@ -19,7 +21,7 @@ trait JsonFiles {
     request
       .params
       .get("page")
-      .flatMap(_.toIntOption)
+      .flatMap(page => Try(page.toInt).toOption)
       .getOrElse(1)
 
   /**
