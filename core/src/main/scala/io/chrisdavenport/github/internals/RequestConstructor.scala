@@ -52,9 +52,17 @@ object RequestConstructor {
     )
   }
 
-  final class GithubError private[RequestConstructor] (val status: Status, val body: String) extends Exception(
-    s"Github Error Occured- Status:$status Body: $body"
-  )
+  final class GithubError private[github] (val status: Status, val body: String) extends Exception(
+    s"Github Error Occured - Status: $status Body: $body"
+  ) {
+
+    override def equals(obj: Any): Boolean =
+      obj match {
+        case other: GithubError if other.status === status && other.body === body => true
+        case _ => false
+      }
+
+  }
 
   private val RE_LINK: Regex = "[\\s]*<(.*)>; rel=\"(.*)\"".r
 

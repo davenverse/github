@@ -4,6 +4,7 @@ import cats.effect._
 import cats.effect.specs2.CatsEffect
 import io.chrisdavenport.github.data.Sort
 import io.chrisdavenport.github.endpoints.utils.PaginatedJsonFiles
+import io.chrisdavenport.github.internals.RequestConstructor.GithubError
 import org.http4s._
 import org.http4s.client._
 import org.http4s.dsl.io._
@@ -51,7 +52,7 @@ class SearchUsersSpec extends Specification with CatsEffect with PaginatedJsonFi
         .toList
         .attempt
         .map {
-          _ must beLeft(UnexpectedStatus(NotFound))
+          _ must beLeft(new GithubError(NotFound, "Page does not exist: 4"))
         }
     }
 
