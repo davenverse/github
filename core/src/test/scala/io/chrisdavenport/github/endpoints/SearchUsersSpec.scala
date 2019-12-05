@@ -2,7 +2,7 @@ package io.chrisdavenport.github.endpoints
 
 import cats.effect._
 import cats.effect.specs2.CatsEffect
-import io.chrisdavenport.github.data.Sort.Repositories
+import io.chrisdavenport.github.data.Sort
 import io.chrisdavenport.github.endpoints.utils.PaginatedJsonFiles
 import org.http4s._
 import org.http4s.client._
@@ -23,7 +23,7 @@ class SearchUsersSpec extends Specification with CatsEffect with PaginatedJsonFi
   "Search.users" should {
 
     "be able to fetch multiple pages" in {
-      Search.users[IO]("scala", Some(Repositories), None, None)
+      Search.users[IO]("scala", Some(Sort.Repositories), None, None)
         .run(Client.fromHttpApp(paginatedEndpoint(numPages = 3)))
         .take(3)
         .compile
@@ -45,7 +45,7 @@ class SearchUsersSpec extends Specification with CatsEffect with PaginatedJsonFi
     }
 
     "fail when not being able to fetch a page" in {
-      Search.users[IO]("scala", Some(Repositories), None, None)
+      Search.users[IO]("scala", Some(Sort.Repositories), None, None)
         .run(Client.fromHttpApp(paginatedEndpoint(numPages = 4)))
         .compile
         .toList
