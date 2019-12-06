@@ -14,40 +14,4 @@ object SearchResult {
       cursor.downField("items").as[List[A]]
     ).mapN(SearchResult.apply)
 
-  sealed trait Sort
-
-  object Sort {
-
-    case object Stars extends Sort
-    case object Forks extends Sort
-    case object HelpWantedIssues extends Sort
-    case object Updated extends Sort
-    case object BestMatch extends Sort
-
-    def toOptionalParam(sort: Sort): Option[String] =
-      sort match {
-        case Stars => Some("stars")
-        case Forks => Some("forks")
-        case HelpWantedIssues => Some("help-wanted-issues")
-        case Updated => Some("updated")
-        case BestMatch => None
-      }
-
-  }
-
-  sealed trait Order
-
-  object Order {
-
-    case object Ascending extends Order
-    case object Descending extends Order
-
-    def toOptionalParam(order: Order): Option[String] =
-      order match {
-        case Ascending => Some("asc")
-        case Descending => Some("desc")
-      }
-
-  }
-
 }
