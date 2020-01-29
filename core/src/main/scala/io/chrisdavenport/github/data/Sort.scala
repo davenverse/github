@@ -12,9 +12,13 @@ object Sort {
   case object Followers extends User
   case object Repositories extends User
   case object Joined extends User
+  case object Newest extends Fork
+  case object Oldest extends Fork
+  case object Stargazers extends Fork
 
   sealed trait Repository extends io.chrisdavenport.github.data.Sort
   sealed trait User extends io.chrisdavenport.github.data.Sort
+  sealed trait Fork extends io.chrisdavenport.github.data.Sort
 
   def toOptionalParam(sort: Sort): Option[String] =
     sort match {
@@ -26,6 +30,9 @@ object Sort {
       case Followers => Some("followers")
       case Repositories => Some("repositories")
       case Joined => Some("joined")
+      case Newest => Some("newest")
+      case Oldest => Some("oldest")
+      case Stargazers => Some("stargazers")
     }
 
 }
