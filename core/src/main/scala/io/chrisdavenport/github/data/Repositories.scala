@@ -204,4 +204,19 @@ object Repositories {
     numberOfContributions: Int,
     recordedName: String
   ) extends Contributor
+
+  final case class MergeRequest(
+      base: String,
+      head: String,
+      commitMessage: String
+  )
+  object MergeRequest {
+    implicit val mergeRequestEncoder: Encoder[MergeRequest] = new Encoder[MergeRequest] {
+      def apply(a: MergeRequest): Json = Json.obj(
+        "base" -> a.base.asJson,
+        "head" -> a.head.asJson,
+        "commit_message" -> a.commitMessage.asJson
+      )
+    }
+  }
 }
