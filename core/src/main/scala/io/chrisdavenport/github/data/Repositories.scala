@@ -219,4 +219,26 @@ object Repositories {
       )
     }
   }
+
+  final case class MergeCommit(
+      author: GitData.GitUser,
+      committer: GitData.GitUser,
+      message: String,
+      tree: GitData.CommitTree,
+      url: Uri,
+      commentCount: Int
+  )
+  object MergeCommit {
+    implicit val repoDecoder = new Decoder[MergeCommit] {
+      def apply(c: HCursor): Decoder.Result[MergeCommit] =
+        (
+          c.downField("author").as[GitData.GitUser],
+          c.downField("committer").as[GitData.GitUser],
+          c.downField("message").as[String],
+          c.downField("tree").as[GitData.CommitTree],
+          c.downField("url").as[Uri],
+          c.downField("comment_count").as[Int]
+        ).mapN(MergeCommit.apply)
+    }
+  }
 }
