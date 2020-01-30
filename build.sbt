@@ -198,6 +198,7 @@ lazy val micrositeSettings = {
     micrositeGitterChannelUrl := "ChristopherDavenport/libraries", // Feel Free to Set To Something Else
     micrositeFooterText := None,
     micrositeHighlightTheme := "atom-one-light",
+    micrositeCompilingDocsTool := WithTut,
     micrositePalette := Map(
       "brand-primary" -> "#3e5b95",
       "brand-secondary" -> "#294066",
