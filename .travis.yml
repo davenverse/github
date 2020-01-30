@@ -1,8 +1,8 @@
 sudo: false
 language: scala
 
-scala_version_212: &scala_version_212 "2.12.9"
-scala_version_213: &scala_version_213 "2.13.0"
+scala_version_212: &scala_version_212 "2.12.10"
+scala_version_213: &scala_version_213 "2.13.1"
 
 jdk:
   - openjdk11
@@ -31,7 +31,7 @@ jobs:
       script: sbt +mimaReportBinaryIssues
     -
       name: docs
-      scala: *scala_version_212 
+      scala: *scala_version_212
       install:
         - rvm use 2.6.5 --install --fuzzy
         - gem install jekyll -v 4
