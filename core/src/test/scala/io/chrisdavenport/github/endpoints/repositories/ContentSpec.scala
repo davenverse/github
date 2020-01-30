@@ -1,23 +1,22 @@
 package io.chrisdavenport.github.endpoints.repositories
 
-import org.specs2.mutable.Specification
-
 import cats.effect._
-import cats.effect.specs2.CatsEffect
-
+import cats.effect.testing.specs2.CatsEffect
 
 import io.circe.literal._
+
 import org.http4s._
-import org.http4s.implicits._
 import org.http4s.client._
 import org.http4s.circe._
 import org.http4s.dsl.io._
+import org.http4s.implicits._
 
+import org.specs2.mutable.Specification
 
 class ContentSpec extends Specification with CatsEffect {
   "Content endpoints" should {
     val getContent = HttpRoutes.of[IO]{
-      case GET -> Root / "repos" / _ / _ / "contents" / "file" => 
+      case GET -> Root / "repos" / _ / _ / "contents" / "file" =>
         val json = json"""
 {
   "type": "file",
@@ -39,7 +38,7 @@ class ContentSpec extends Specification with CatsEffect {
 }
         """
         Ok(json)
-      case GET -> Root / "repos" / _ / _ / "contents" / "directory" => 
+      case GET -> Root / "repos" / _ / _ / "contents" / "directory" =>
         val json = json"""
         [
   {

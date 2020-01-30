@@ -1,18 +1,19 @@
 package io.chrisdavenport.github.endpoints
 
-import org.specs2.mutable.Specification
-
 import cats.effect._
-import cats.effect.specs2.CatsEffect
-
+import cats.effect.testing.specs2.CatsEffect
 
 import io.circe.literal._
+
+import io.chrisdavenport.github.data.Issues
+
 import org.http4s._
-import org.http4s.implicits._
 import org.http4s.client._
 import org.http4s.circe._
 import org.http4s.dsl.io._
-import io.chrisdavenport.github.data.Issues
+import org.http4s.implicits._
+
+import org.specs2.mutable.Specification
 
 class PullRequestsSpec extends Specification with CatsEffect {
 
@@ -511,7 +512,7 @@ val json = json"""
 """
       val client = Client.fromHttpApp(
         HttpRoutes.of[IO]{
-          case GET -> Root / "repos" / _ / _ / "pulls" => 
+          case GET -> Root / "repos" / _ / _ / "pulls" =>
             Ok(json)
         }.orNotFound
       )
@@ -521,7 +522,7 @@ val json = json"""
         .drain
         .attempt
         .map(_ must beRight)
-    
+
     }
 
     "return right Get a single pull request for default resp from api guide" in {
@@ -1047,7 +1048,7 @@ val json = json"""
       """
       val client = Client.fromHttpApp(
         HttpRoutes.of[IO]{
-          case GET -> Root / "repos" / _ / _ / "pulls" / _ => 
+          case GET -> Root / "repos" / _ / _ / "pulls" / _ =>
             Ok(json)
         }.orNotFound
       )

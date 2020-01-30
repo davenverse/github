@@ -1,15 +1,18 @@
 package io.chrisdavenport.github.endpoints
 
-import org.specs2.mutable.Specification
 import cats.effect._
-import cats.effect.specs2.CatsEffect
+import cats.effect.testing.specs2.CatsEffect
+
 import io.chrisdavenport.github.data.Sort.Stars
 import io.chrisdavenport.github.endpoints.utils.PaginatedJsonFiles
 import io.chrisdavenport.github.internals.RequestConstructor.GithubError
+
 import org.http4s._
 import org.http4s.client._
 import org.http4s.dsl.io._
 import org.http4s.implicits._
+
+import org.specs2.mutable.Specification
 
 class SearchRepositorySpec extends Specification with CatsEffect with PaginatedJsonFiles {
 
