@@ -1,11 +1,14 @@
 package io.chrisdavenport.github.data
 
 import cats.implicits._
-import org.http4s.Uri
-import org.http4s.circe._
-import java.time.Instant
+
 import io.circe._
 import io.circe.syntax._
+
+import org.http4s.Uri
+import org.http4s.circe._
+
+import java.time.ZonedDateTime
 
 object Repositories {
 
@@ -15,7 +18,7 @@ object Repositories {
   )
   object RepoRef {
     implicit val repoRefDecoder=  new Decoder[RepoRef]{
-      def apply(c: HCursor): Decoder.Result[RepoRef] = 
+      def apply(c: HCursor): Decoder.Result[RepoRef] =
         (
           c.downField("owner").as[Users.SimpleOwner],
           c.downField("name").as[String]
@@ -42,11 +45,11 @@ object Repositories {
     homepage: Option[String],
     canFork: Option[Boolean],
     size: Option[Int],
-    updatedAt: Option[Instant],
+    updatedAt: Option[ZonedDateTime],
     watchers: Option[Int],
     language: Option[String],
     defaultBranch: Option[String],
-    pushedAt: Option[Instant], // None for new Repos
+    pushedAt: Option[ZonedDateTime], // None for new Repos
     openIssues: Option[Int],
     hasWiki: Option[Boolean],
     hasIssues: Option[Boolean],
@@ -56,7 +59,7 @@ object Repositories {
   )
   object Repo {
     implicit val repoDecoder =new Decoder[Repo]{
-      def apply(c: HCursor): Decoder.Result[Repo] = 
+      def apply(c: HCursor): Decoder.Result[Repo] =
         ((
           c.downField("name").as[String],
           c.downField("id").as[Int],
@@ -77,12 +80,12 @@ object Repositories {
           c.downField("homepage").as[Option[String]],
           c.downField("fork").as[Option[Boolean]],
           c.downField("size").as[Option[Int]],
-          c.downField("updated_at").as[Option[Instant]],
+          c.downField("updated_at").as[Option[ZonedDateTime]],
           c.downField("watchers").as[Option[Int]],
           c.downField("language").as[Option[String]],
           c.downField("default_branch").as[Option[String]]
         ).tupled,
-          c.downField("pushed_at").as[Option[Instant]],
+          c.downField("pushed_at").as[Option[ZonedDateTime]],
           c.downField("open_issues").as[Option[Int]],
           c.downField("has_wiki").as[Option[Boolean]],
           c.downField("has_issues").as[Option[Boolean]],
@@ -141,7 +144,7 @@ object Repositories {
   )
   object NewRepo {
     def create(name: String): NewRepo = NewRepo(name, None, None, None, None, None, None)
-    
+
     implicit val newRepoEncoder = new Encoder[NewRepo]{
       def apply(a: NewRepo): Json = Json.obj(
         "name" -> a.name.asJson,
@@ -165,7 +168,7 @@ object Repositories {
     hasDownloads: Option[Boolean]
   )
   object EditRepo {
-    
+
     implicit val editRepoEncoder = new Encoder[EditRepo]{
       def apply(a: EditRepo): Json = Json.obj(
         "name" -> a.name.asJson,

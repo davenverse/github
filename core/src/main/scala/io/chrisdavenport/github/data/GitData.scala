@@ -5,7 +5,7 @@ import org.http4s._
 import org.http4s.circe._
 import io.circe._
 import io.circe.syntax._
-import java.time.Instant
+import java.time.ZonedDateTime
 
 object GitData {
   sealed trait Encoding extends Product with Serializable
@@ -29,7 +29,7 @@ object GitData {
   )
   object Blob {
     implicit val decoder = new Decoder[Blob]{
-      def apply(c: HCursor): Decoder.Result[Blob] = 
+      def apply(c: HCursor): Decoder.Result[Blob] =
         (
           c.downField("content").as[String],
           c.downField("url").as[Uri],
@@ -59,7 +59,7 @@ object GitData {
   )
   object NewBlob {
     implicit val decoder = new Decoder[NewBlob]{
-      def apply(c: HCursor): Decoder.Result[NewBlob] = 
+      def apply(c: HCursor): Decoder.Result[NewBlob] =
         (
           c.downField("url").as[Uri],
           c.downField("sha").as[String]
@@ -97,7 +97,7 @@ object GitData {
   sealed trait GitMode extends Product with Serializable
   object GitMode {
     case object Executable extends GitMode
-    case object File extends GitMode    
+    case object File extends GitMode
     case object Subdirectory extends GitMode
     case object Submodule extends GitMode
     case object Symlink extends GitMode
@@ -135,7 +135,7 @@ object GitData {
   )
   object GitTree {
     implicit val decoder = new Decoder[GitTree]{
-      def apply(c: HCursor): Decoder.Result[GitTree] = 
+      def apply(c: HCursor): Decoder.Result[GitTree] =
         (
           c.downField("path").as[String],
           c.downField("sha").as[String],
@@ -155,7 +155,7 @@ object GitData {
   )
   object Tree {
     implicit val decoder = new Decoder[Tree]{
-      def apply(c: HCursor): Decoder.Result[Tree] = 
+      def apply(c: HCursor): Decoder.Result[Tree] =
         (
           c.downField("sha").as[String],
           c.downField("url").as[Uri],
@@ -170,7 +170,7 @@ object GitData {
   sealed trait CreateGitTree extends Product with Serializable
   object CreateGitTree {
 
-    def fromGitTree(g: GitTree): CreateGitTree = 
+    def fromGitTree(g: GitTree): CreateGitTree =
       CreateGitTreeSha(
         g.path,
         g.sha.some,
@@ -184,7 +184,7 @@ object GitData {
       `type`: GitObjectType,
       mode: GitMode
     ) extends CreateGitTree
-    
+
     final case class CreateGitTreeBlob(
       path: String,
       content: String,
@@ -193,39 +193,39 @@ object GitData {
 
     implicit val encoder = new Encoder[CreateGitTree]{
       def apply(a: CreateGitTree): Json = a match {
-        case CreateGitTreeSha(path, sha, typ, mode) => 
+        case CreateGitTreeSha(path, sha, typ, mode) =>
           Json.obj(
             "path" -> path.asJson,
             "sha" -> sha.asJson,
             "type" -> typ.asJson,
             "mode" -> mode.asJson
           )
-        case CreateGitTreeBlob(path, content, mode) => 
+        case CreateGitTreeBlob(path, content, mode) =>
           Json.obj(
             "path" -> path.asJson,
             "type" -> (GitObjectType.Blob : GitObjectType).asJson,
             "mode" -> mode.merge.asJson,
             "content" -> content.asJson
           )
-        
+
       }
     }
   }
 
   /**
-   * The tree creation API accepts nested entries. 
+   * The tree creation API accepts nested entries.
    * If you specify both a tree and a nested path modifying that tree,
    * this endpoint will overwrite the contents of the tree with the new path contents,
    * and create a new tree structure.
-   * 
+   *
    * If you use this endpoint to add, delete, or modify the file contents in a tree,
    *  you will need to commit the tree and then update a branch to point to the commit.
    *  For more information see "Create a commit" and "Update a reference."
-   * 
+   *
    * POST /repos/:owner/:repo/git/trees
-   * 
+   *
    * @param tree Objects specifying the tree structure
-   * @param baseTreeSha The SHA1 of the tree you want to update with new data. 
+   * @param baseTreeSha The SHA1 of the tree you want to update with new data.
    *   If you don't set this, the commit will be created on top of everything;
    *   however, it will only contain your change, the rest of your files will show up as deleted.
    **/
@@ -235,7 +235,7 @@ object GitData {
   )
   object CreateTree {
     implicit val encoder = new Encoder[CreateTree]{
-      def apply(a: CreateTree): Json = 
+      def apply(a: CreateTree): Json =
         Json.obj(
           "tree" -> a.tree.asJson,
           "base_tree" -> a.baseTreeSha.asJson
@@ -247,15 +247,15 @@ object GitData {
   final case class GitUser(
     name: String,
     email: String,
-    date: Instant
+    date: ZonedDateTime
   )
   object GitUser {
     implicit val decoder = new Decoder[GitUser]{
-      def apply(c: HCursor): Decoder.Result[GitUser] = 
+      def apply(c: HCursor): Decoder.Result[GitUser] =
         (
           c.downField("name").as[String],
           c.downField("email").as[String],
-          c.downField("date").as[Instant]
+          c.downField("date").as[ZonedDateTime]
         ).mapN(GitUser.apply)
     }
     implicit val encoder = new Encoder[GitUser]{
@@ -274,7 +274,7 @@ object GitData {
 
   object CommitTree {
     implicit val decoder = new Decoder[CommitTree]{
-      def apply(c: HCursor): Decoder.Result[CommitTree] = 
+      def apply(c: HCursor): Decoder.Result[CommitTree] =
         (
           c.downField("sha").as[String],
           c.downField("url").as[Uri]
@@ -293,7 +293,7 @@ object GitData {
   )
   object GitCommit {
     implicit val decoder = new Decoder[GitCommit]{
-      def apply(c: HCursor): Decoder.Result[GitCommit] = 
+      def apply(c: HCursor): Decoder.Result[GitCommit] =
         (
           c.downField("message").as[String],
           c.downField("url").as[Uri],
@@ -331,13 +331,13 @@ object GitData {
   }
 
   final case class GitObject(
-    `type`: GitObjectType, 
+    `type`: GitObjectType,
     sha: String,
     uri: Uri
   )
   object GitObject {
     implicit val decoder = new Decoder[GitObject]{
-      def apply(c: HCursor): Decoder.Result[GitObject] = 
+      def apply(c: HCursor): Decoder.Result[GitObject] =
         (
           c.downField("type").as[GitObjectType],
           c.downField("sha").as[String],
@@ -398,7 +398,7 @@ object GitData {
   )
   object GitTag {
     implicit val decoder = new Decoder[GitTag]{
-      def apply(c: HCursor): Decoder.Result[GitTag] = 
+      def apply(c: HCursor): Decoder.Result[GitTag] =
         (
           c.downField("tag").as[String],
           c.downField("sha").as[String],

@@ -2,11 +2,14 @@ package io.chrisdavenport.github.data
 
 import cats._
 import cats.implicits._
-import java.time.Instant
-import org.http4s._
-import org.http4s.circe._
+
 import io.circe._
 import io.circe.syntax._
+
+import org.http4s._
+import org.http4s.circe._
+
+import java.time.ZonedDateTime
 
 object PullRequests {
 
@@ -18,7 +21,7 @@ object PullRequests {
   )
   object PullRequestLinks {
     implicit val decoder = new Decoder[PullRequestLinks]{
-      def apply(c: HCursor): Decoder.Result[PullRequestLinks] = 
+      def apply(c: HCursor): Decoder.Result[PullRequestLinks] =
         (
           c.downField("review_comments").downField("href").as[Uri],
           c.downField("comments").downField("href").as[Uri],
@@ -38,7 +41,7 @@ object PullRequests {
     case object Behind extends MergeableState
 
     implicit val decoder = new Decoder[MergeableState]{
-      def apply(c: HCursor): Decoder.Result[MergeableState] = 
+      def apply(c: HCursor): Decoder.Result[MergeableState] =
         c.as[String].flatMap{
           case "unknown" => Unknown.asRight
           case "clean" => Clean.asRight
@@ -68,10 +71,10 @@ object PullRequests {
     id: Int,
     body: Option[String],
     user: Users.SimpleUser,
-    createdAt: Instant,
-    updatedAt: Instant,
-    closedAt: Option[Instant],
-    mergedAt: Option[Instant],
+    createdAt: ZonedDateTime,
+    updatedAt: ZonedDateTime,
+    closedAt: Option[ZonedDateTime],
+    mergedAt: Option[ZonedDateTime],
     assignees: List[Users.SimpleUser],
     requestedReviewers: List[Users.SimpleUser],
     uri: Uri,
@@ -83,7 +86,7 @@ object PullRequests {
   )
   object SimplePullRequest {
     implicit val decoder = new Decoder[SimplePullRequest]{
-      def apply(c: HCursor): Decoder.Result[SimplePullRequest] = 
+      def apply(c: HCursor): Decoder.Result[SimplePullRequest] =
         (
           c.downField("state").as[Issues.IssueState],
           c.downField("number").as[Issues.IssueNumber],
@@ -91,10 +94,10 @@ object PullRequests {
           c.downField("id").as[Int],
           c.downField("body").as[Option[String]],
           c.downField("user").as[Users.SimpleUser],
-          c.downField("created_at").as[Instant],
-          c.downField("updated_at").as[Instant],
-          c.downField("closed_at").as[Option[Instant]],
-          c.downField("merged_at").as[Option[Instant]],
+          c.downField("created_at").as[ZonedDateTime],
+          c.downField("updated_at").as[ZonedDateTime],
+          c.downField("closed_at").as[Option[ZonedDateTime]],
+          c.downField("merged_at").as[Option[ZonedDateTime]],
           c.downField("assignees").as[List[Users.SimpleUser]],
           c.downField("requested_reviewers").as[Option[List[Users.SimpleUser]]]
             .map(_.getOrElse(MonoidK[List].empty)),
@@ -117,7 +120,7 @@ object PullRequests {
   )
   object PullRequestCommit {
     implicit val decoder = new Decoder[PullRequestCommit]{
-      def apply(c: HCursor): Decoder.Result[PullRequestCommit] = 
+      def apply(c: HCursor): Decoder.Result[PullRequestCommit] =
         (
           c.downField("label").as[String],
           c.downField("ref").as[String],
@@ -135,10 +138,10 @@ object PullRequests {
     id: Int,
     body: Option[String],
     user: Users.SimpleUser,
-    createdAt: Instant,
-    updatedAt: Instant,
-    closedAt: Option[Instant],
-    mergedAt: Option[Instant],
+    createdAt: ZonedDateTime,
+    updatedAt: ZonedDateTime,
+    closedAt: Option[ZonedDateTime],
+    mergedAt: Option[ZonedDateTime],
     assignees: List[Users.SimpleUser],
     requestedReviewers: List[Users.SimpleUser],
     uri: Uri,
@@ -170,10 +173,10 @@ object PullRequests {
         id: Int <- c.downField("id").as[Int]
         body: Option[String] <- c.downField("body").as[Option[String]]
         user: Users.SimpleUser <- c.downField("user").as[Users.SimpleUser]
-        createdAt: Instant <- c.downField("created_at").as[Instant]
-        updatedAt: Instant <- c.downField("updated_at").as[Instant]
-        closedAt: Option[Instant] <- c.downField("closed_at").as[Option[Instant]]
-        mergedAt: Option[Instant] <- c.downField("merged_at").as[Option[Instant]]
+        createdAt: ZonedDateTime <- c.downField("created_at").as[ZonedDateTime]
+        updatedAt: ZonedDateTime <- c.downField("updated_at").as[ZonedDateTime]
+        closedAt: Option[ZonedDateTime] <- c.downField("closed_at").as[Option[ZonedDateTime]]
+        mergedAt: Option[ZonedDateTime] <- c.downField("merged_at").as[Option[ZonedDateTime]]
         assignees: List[Users.SimpleUser] <- c.downField("assignees").as[List[Users.SimpleUser]]
         requestedReviewers: List[Users.SimpleUser] <- c.downField("requested_reviewers").as[Option[List[Users.SimpleUser]]]
           .map(_.getOrElse(MonoidK[List].empty))
@@ -230,7 +233,7 @@ object PullRequests {
     }
   }
 
-  
+
 
   final case class EditPullRequest(
     title: Option[String],
@@ -267,14 +270,14 @@ object PullRequests {
 
     implicit val encoder = new Encoder[CreatePullRequest]{
       def apply(a: CreatePullRequest): Json = a match {
-        case PullRequest(title, body, head, base) => 
+        case PullRequest(title, body, head, base) =>
           Json.obj(
             "title" -> title.asJson,
             "body" -> body.asJson,
             "head" -> head.asJson,
             "base" -> base.asJson
           )
-        case Issue(issueNumber, head, base) => 
+        case Issue(issueNumber, head, base) =>
           Json.obj(
             "issue" -> issueNumber.asJson,
             "head" -> head.asJson,
@@ -299,7 +302,7 @@ object PullRequests {
     case object Edited extends PullRequestEventType
 
     implicit val decoder = new Decoder[PullRequestEventType]{
-      def apply(c: HCursor): Decoder.Result[PullRequestEventType] = 
+      def apply(c: HCursor): Decoder.Result[PullRequestEventType] =
         c.as[String].flatMap{
           case "opened" => Opened.asRight
           case "closed" => Closed.asRight
@@ -326,7 +329,7 @@ object PullRequests {
   )
   object PullRequestEvent {
     implicit val decoder = new Decoder[PullRequestEvent]{
-      def apply(c: HCursor): Decoder.Result[PullRequestEvent] = 
+      def apply(c: HCursor): Decoder.Result[PullRequestEvent] =
         (
           c.downField("action").as[PullRequestEventType],
           c.downField("number").as[Int],
@@ -336,5 +339,5 @@ object PullRequests {
         ).mapN(PullRequestEvent.apply)
     }
   }
-  
+
 }
