@@ -1,15 +1,15 @@
 package io.chrisdavenport.github
 package endpoints
 
-import org.specs2.mutable.Specification
-
 import cats.effect._
-import cats.effect.specs2.CatsEffect
+import cats.effect.testing.specs2.CatsEffect
 
 import org.http4s._
-import org.http4s.implicits._
 import org.http4s.client._
 import org.http4s.dsl.io._
+import org.http4s.implicits._
+
+import org.specs2.mutable.Specification
 
 class RepositoriesSpec extends Specification with CatsEffect {
   "Repositories" should {

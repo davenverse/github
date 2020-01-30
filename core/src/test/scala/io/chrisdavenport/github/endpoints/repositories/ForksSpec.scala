@@ -1,25 +1,24 @@
 package io.chrisdavenport.github.endpoints.repositories
 
-import org.specs2.mutable.Specification
-
 import cats.effect._
-import cats.effect.specs2.CatsEffect
-
-
-import io.circe.literal._
-import org.http4s._
-import org.http4s.implicits._
-import org.http4s.client._
-import org.http4s.circe._
-import org.http4s.dsl.io._
+import cats.effect.testing.specs2.CatsEffect
 
 import io.chrisdavenport.github.OAuth
 
+import io.circe.literal._
+
+import org.http4s._
+import org.http4s.client._
+import org.http4s.circe._
+import org.http4s.dsl.io._
+import org.http4s.implicits._
+
+import org.specs2.mutable.Specification
 
 class ForksSpec extends Specification with CatsEffect {
   "Forks endpoints" should {
     val routes = HttpRoutes.of[IO]{
-      case POST -> Root / "repos" / _ / _ / "forks" => 
+      case POST -> Root / "repos" / _ / _ / "forks" =>
         val json = json"""
         {
           "id": 1296269,
@@ -131,7 +130,7 @@ class ForksSpec extends Specification with CatsEffect {
         }"""
         Accepted(json)
 
-      case GET -> Root / "repos" / _ / _ / "forks" => 
+      case GET -> Root / "repos" / _ / _ / "forks" =>
         val json = json"""
         [
           {
