@@ -4,7 +4,7 @@ import cats.implicits._
 import cats.effect._
 import org.http4s.Uri
 import org.http4s.circe._
-import java.time.Instant
+import java.time.ZonedDateTime
 
 import io.circe._
 
@@ -16,7 +16,7 @@ object Users {
     object Organization extends OwnerType
 
     implicit val ownerTypeDecoder = new Decoder[OwnerType]{
-      def apply(c: HCursor): Decoder.Result[OwnerType] =  
+      def apply(c: HCursor): Decoder.Result[OwnerType] =
         c.as[String].flatMap{
           case "User" => User.pure[Decoder.Result]
           case "Organization" => Organization.pure[Decoder.Result]
@@ -61,7 +61,7 @@ object Users {
   ) extends SimpleOwner
   object SimpleOrganization {
     implicit val simpleOrganizationDecoder = new Decoder[SimpleOrganization]{
-      def apply(c: HCursor): Decoder.Result[SimpleOrganization] = 
+      def apply(c: HCursor): Decoder.Result[SimpleOrganization] =
       (
         c.downField("id").as[Int],
         c.downField("login").as[String],
@@ -73,9 +73,9 @@ object Users {
 
   object SimpleOwner {
     implicit val simpleOwnerDecoder = new Decoder[SimpleOwner]{
-      def apply(c: HCursor): Decoder.Result[SimpleOwner] = 
+      def apply(c: HCursor): Decoder.Result[SimpleOwner] =
         c.downField("type").as[OwnerType].flatMap{
-          case OwnerType.Organization => 
+          case OwnerType.Organization =>
             SimpleUser.simpleUserDecoder(c)
           case OwnerType.User =>
             SimpleOrganization.simpleOrganizationDecoder(c)
@@ -90,7 +90,7 @@ object Users {
     name: Option[String],
     email: Option[String],
     company: Option[String],
-    createdAt: Option[Instant],
+    createdAt: Option[ZonedDateTime],
     blog: Option[String],
     location: Option[String],
     bio: Option[String],
@@ -105,14 +105,14 @@ object Users {
   ) extends Owner
   object User {
     implicit val userDecoder = new Decoder[User]{
-      def apply(c: HCursor): Decoder.Result[User] = 
+      def apply(c: HCursor): Decoder.Result[User] =
         (
           c.downField("id").as[Int],
           c.downField("login").as[String],
           c.downField("name").as[Option[String]],
           c.downField("email").as[Option[String]],
           c.downField("company").as[Option[String]],
-          c.downField("created_at").as[Option[Instant]],
+          c.downField("created_at").as[Option[ZonedDateTime]],
           c.downField("blog").as[Option[String]],
           c.downField("location").as[Option[String]],
           c.downField("bio").as[Option[String]],
@@ -135,7 +135,7 @@ object Users {
     name: Option[String],
     email: Option[String],
     company: Option[String],
-    createdAt: Instant,
+    createdAt: ZonedDateTime,
     blog: Option[String],
     location: Option[String],
     publicRepos: Int,
@@ -148,14 +148,14 @@ object Users {
   ) extends Owner
   object Organization {
     implicit val organizationDecoder = new Decoder[Organization]{
-      def apply(c: HCursor): Decoder.Result[Organization] = 
+      def apply(c: HCursor): Decoder.Result[Organization] =
         (
           c.downField("id").as[Int],
           c.downField("login").as[String],
           c.downField("name").as[Option[String]],
           c.downField("email").as[Option[String]],
           c.downField("company").as[Option[String]],
-          c.downField("created_at").as[Instant],
+          c.downField("created_at").as[ZonedDateTime],
           c.downField("blog").as[Option[String]],
           c.downField("location").as[Option[String]],
           c.downField("public_repos").as[Int],
@@ -170,11 +170,11 @@ object Users {
   }
   object Owner {
     implicit val ownerDecoder = new Decoder[Owner]{
-      def apply(c: HCursor): Decoder.Result[Owner] = 
+      def apply(c: HCursor): Decoder.Result[Owner] =
         c.downField("type").as[OwnerType].flatMap{
           case OwnerType.User =>
             User.userDecoder(c)
-          case OwnerType.Organization => 
+          case OwnerType.Organization =>
             Organization.organizationDecoder(c)
         }
     }
