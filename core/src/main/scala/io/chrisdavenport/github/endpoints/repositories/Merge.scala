@@ -18,15 +18,12 @@ import org.http4s.implicits._
  * the same thing as merging one branch into another in a local repository and then pushing to GitHub.
  *
  * See the Repository Merging API for more details.
- *
  **/
 object Merge {
 
   /**
    * Perform a merge in a repository - https://developer.github.com/v3/repos/merging/#perform-a-merge
-   *
    * POST /repos/:owner/:repo/merges
-   *
    **/
   def perform[F[_]: Sync](
     owner: String,

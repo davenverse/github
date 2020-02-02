@@ -243,31 +243,31 @@ object Repositories {
   }
 
   final case class MergeResult(
-    sha: String,
-    nodeId: String,
-    commit: MergeCommit,
-    uri: Uri,
-    htmlUri: Uri,
-    commentsUri: Uri,
-    author: Users.Owner,
-    committer: Users.Owner,
-    parents: List[GitData.CommitTree]
+      sha: String,
+      nodeId: String,
+      commit: MergeCommit,
+      uri: Uri,
+      htmlUri: Uri,
+      commentsUri: Uri,
+      author: Users.Owner,
+      committer: Users.Owner,
+      parents: List[GitData.CommitTree]
   )
   object MergeResult {
     implicit val mergeResultDecoder = new Decoder[MergeResult] {
-        def apply(c: HCursor): Decoder.Result[MergeResult] =
-          (
-            c.downField("sha").as[String],
-            c.downField("node_id").as[String],
-            c.downField("commit").as[MergeCommit],
-            c.downField("url").as[Uri],
-            c.downField("html_url").as[Uri],
-            c.downField("comments_url").as[Uri],
-            c.downField("author").as[Users.Owner],
-            c.downField("committer").as[Users.Owner],
-            c.downField("parents").as[List[GitData.CommitTree]]
-            ).mapN(MergeResult.apply)
-      }
+      def apply(c: HCursor): Decoder.Result[MergeResult] =
+        (
+          c.downField("sha").as[String],
+          c.downField("node_id").as[String],
+          c.downField("commit").as[MergeCommit],
+          c.downField("url").as[Uri],
+          c.downField("html_url").as[Uri],
+          c.downField("comments_url").as[Uri],
+          c.downField("author").as[Users.Owner],
+          c.downField("committer").as[Users.Owner],
+          c.downField("parents").as[List[GitData.CommitTree]]
+        ).mapN(MergeResult.apply)
+    }
   }
 
 }
