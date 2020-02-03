@@ -1,7 +1,7 @@
 package io.chrisdavenport.github.endpoints.repositories
 
 import cats.effect._
-import cats.effect.specs2.CatsEffect
+import cats.effect.testing.specs2.CatsEffect
 
 import io.circe.literal._
 
