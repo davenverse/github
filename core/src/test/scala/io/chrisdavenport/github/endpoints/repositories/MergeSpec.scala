@@ -107,7 +107,7 @@ class MergeSpec extends Specification with CatsEffect {
           Created(json)
       }
       "perform a merge" in {
-        Merge.perform[IO]("foo", "bar", MergeRequest("base", "head", "message"), OAuth(""))
+        Merge.merge[IO]("foo", "bar", MergeRequest("base", "head", "message"), OAuth(""))
           .run(Client.fromHttpApp(routes.orNotFound))
           .attempt
           .map { _ must beRight }
