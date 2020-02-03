@@ -25,7 +25,7 @@ object Merge {
    * Perform a merge in a repository - https://developer.github.com/v3/repos/merging/#perform-a-merge
    * POST /repos/:owner/:repo/merges
    **/
-  def perform[F[_]: Sync](
+  def merge[F[_]: Sync](
     owner: String,
     repo: String,
     mergeRequest: MergeRequest,
