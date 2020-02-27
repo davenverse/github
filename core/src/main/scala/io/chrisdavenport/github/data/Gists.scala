@@ -174,8 +174,8 @@ object Gists {
           c.downField("comments_url").as[Uri],
           c.downField("owner").as[Users.Owner],
           c.downField("truncated").as[Boolean],
-          c.downField("forks").as[Option[List[GistFork]]].getOrElse(Nil),
-          c.downField("history").as[Option[List[GistCommit]]].getOrElse(Nil)
+          c.downField("forks").as[Option[List[GistFork]]].map(_.getOrElse(List.empty[GistFork])),
+          c.downField("history").as[Option[List[GistCommit]]].map(_.getOrElse(List.empty[GistCommit]))
         ).mapN(Gist.apply)
       }
     }
