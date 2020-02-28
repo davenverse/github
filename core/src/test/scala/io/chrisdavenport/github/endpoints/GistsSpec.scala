@@ -32,6 +32,8 @@ class GistsSpec extends Specification with CatsEffect with JsonFiles {
       fileResponse("list_gist_commits.json")
     case GET -> Root / "gists" / _ / "forks" =>
       fileResponse("list_gist_forks.json")
+    case GET -> Root / "gists" / _ / "stars" =>
+      NoContent()
     case GET -> Root / "gists" / _ / _ =>
       fileResponse("get_a_specific_revision.json")
     case GET -> Root / "gists" / _ =>
@@ -96,8 +98,8 @@ class GistsSpec extends Specification with CatsEffect with JsonFiles {
     }
 
     "check starred" in {
-      failure
-    }.pendingUntilFixed
+      Gists.checkStarred[IO]("foo", OAuth("")).run(client).attempt.map(_ must beRight)
+    }
 
     "fork a gist" in {
       Gists.fork[IO]("foo", OAuth("")).run(client).attempt.map(_ must beRight)

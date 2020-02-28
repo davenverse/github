@@ -147,7 +147,24 @@ object Gists {
       uri"gists" / gistId / "star"
     )(Sync[F], EntityDecoder.void[F])
 
-  //def checkStarred
+  /**
+   * Check if a gist is starred
+   * https://developer.github.com/v3/gists/#check-if-a-gist-is-starred
+   */
+  def checkStarred[F[_]: Sync](
+      gistId: String,
+      auth: Auth
+  ): Kleisli[F, Client[F], Boolean] =
+    RequestConstructor
+      .runRequestWithNoBody[F, Unit](
+        auth.some,
+        Method.GET,
+        uri"gists" / gistId / "star"
+      )(Sync[F], EntityDecoder.void[F])
+      .map(_ => true)
+      .recover {
+        case ghError: RequestConstructor.GithubError if ghError.status == Status.NotFound => false
+      }
 
   /**
    * Fork a gist
