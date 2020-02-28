@@ -145,7 +145,7 @@ object Gists {
       auth.some,
       Method.PUT,
       uri"gists" / gistId / "star"
-    )
+    )(Sync[F], EntityDecoder.void[F])
 
   //def checkStarred
 
@@ -189,5 +189,5 @@ object Gists {
       auth.some,
       Method.DELETE,
       uri"gists" / gistId
-    )
+    )(Sync[F], EntityDecoder.void[F])
 }
