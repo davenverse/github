@@ -15,6 +15,7 @@ import org.http4s.circe.CirceEntityEncoder._
 
 import org.specs2.mutable.Specification
 import io.chrisdavenport.github.data.Gists.CreateGist
+import io.chrisdavenport.github.data.Gists.EditGist
 
 class GistsSpec extends Specification with CatsEffect with JsonFiles {
 
@@ -40,6 +41,8 @@ class GistsSpec extends Specification with CatsEffect with JsonFiles {
       fileResponse("get_a_single_gist.json")
     case POST -> Root / "gists" =>
       fileResponse("create_a_gist.json")
+    case POST -> Root / "gists" / _ =>
+      fileResponse("edit_a_gist.json")
     case PUT -> Root / "gists" / _ / "star" =>
       Ok()
     case POST -> Root / "gists" / _ / "forks" =>
@@ -86,8 +89,12 @@ class GistsSpec extends Specification with CatsEffect with JsonFiles {
     }
 
     "edit a gist" in {
-      failure
-    }.pendingUntilFixed
+      Gists
+        .editGist[IO]("foo", EditGist("bar", Nil, Nil), OAuth(""))
+        .run(client)
+        .attempt
+        .map(_ must beRight)
+    }
 
     "list commits" in {
       Gists.listCommits[IO]("foo", OAuth("")).run(client).attempt.map(_ must beRight)

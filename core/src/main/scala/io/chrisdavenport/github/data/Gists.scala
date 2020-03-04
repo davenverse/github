@@ -23,8 +23,8 @@ object Gists {
       )
     }
 
-    private[Gists] def encodeList: List[CreateGistFile] => Json =
-      _.foldLeft(JsonObject.empty)((json, file) => json.add(file.name, file.asJson)).asJson
+    private[Gists] def encodeList: List[CreateGistFile] => JsonObject =
+      _.foldLeft(JsonObject.empty)((json, file) => json.add(file.name, file.asJson))
   }
 
   final case class CreateGist(
@@ -35,9 +35,7 @@ object Gists {
   object CreateGist {
     implicit val encoder: Encoder[CreateGist] = new Encoder[CreateGist] {
       def apply(a: CreateGist): Json = Json.obj(
-        "files" -> a.files
-          .foldLeft(JsonObject.empty)((json, file) => json.add(file.name, file.asJson))
-          .asJson,
+        "files" -> CreateGistFile.encodeList(a.files).asJson,
         "description" -> a.description.asJson,
         "public" -> a.public.asJson
       )
@@ -175,7 +173,9 @@ object Gists {
           c.downField("owner").as[Users.Owner],
           c.downField("truncated").as[Boolean],
           c.downField("forks").as[Option[List[GistFork]]].map(_.getOrElse(List.empty[GistFork])),
-          c.downField("history").as[Option[List[GistCommit]]].map(_.getOrElse(List.empty[GistCommit]))
+          c.downField("history")
+            .as[Option[List[GistCommit]]]
+            .map(_.getOrElse(List.empty[GistCommit]))
         ).mapN(Gist.apply)
       }
     }
@@ -183,13 +183,17 @@ object Gists {
 
   final case class EditGist(
       description: String,
-      files: List[CreateGistFile],
-      filesToDelte: List[String]
+      filesToCreate: List[CreateGistFile],
+      filesToDelete: List[String]
   )
   object EditGist {
     implicit val encoder: Encoder[EditGist] = new Encoder[EditGist] {
       def apply(a: EditGist): Json = Json.obj(
-        "files" -> CreateGistFile.encodeList(a.files),
+        "files" -> a.filesToDelete
+          .foldLeft(CreateGistFile.encodeList(a.filesToCreate))((json, file) =>
+            json.add(file, Json.Null)
+          )
+          .asJson,
         "description" -> a.description.asJson
       )
     }

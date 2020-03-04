@@ -107,17 +107,17 @@ object Gists {
    * Edit a gist
    * https://developer.github.com/v3/gists/#edit-a-gist
    */
-  // def editGist[F[_]: Sync](
-  //   gistId: String,
-  //   editGist: EditGist,
-  //   auth: Auth
-  // ): Kleisli[F, Client[F], Gist] =
-  //   RequestConstructor.runRequestWithBody[F, EditGist, Gist](
-  //     auth.some,
-  //     Method.POST,
-  //     uri"gists" / gistId,
-  //     editGist
-  //   )
+  def editGist[F[_]: Sync](
+    gistId: String,
+    editGist: EditGist,
+    auth: Auth
+  ): Kleisli[F, Client[F], Gist] =
+    RequestConstructor.runRequestWithBody[F, EditGist, Gist](
+      auth.some,
+      Method.POST,
+      uri"gists" / gistId,
+      editGist
+    )
 
   /**
    * List commits history for a gist
