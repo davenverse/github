@@ -4,6 +4,7 @@ import cats.effect._
 import cats.effect.testing.specs2.CatsEffect
 
 import io.chrisdavenport.github._
+import io.chrisdavenport.github.data.Gists._
 import io.chrisdavenport.github.endpoints.Gists
 import io.chrisdavenport.github.endpoints.utils.JsonFiles
 
@@ -14,8 +15,6 @@ import org.http4s.implicits._
 import org.http4s.circe.CirceEntityEncoder._
 
 import org.specs2.mutable.Specification
-import io.chrisdavenport.github.data.Gists.CreateGist
-import io.chrisdavenport.github.data.Gists.EditGist
 
 class GistsSpec extends Specification with CatsEffect with JsonFiles {
 
