@@ -85,7 +85,7 @@ object RequestConstructor {
       val baseReq = Request[F](method = Method.GET, uri = uri)
         .withHeaders(extraHeaders)
       val req = auth.fold(baseReq)(setAuth(_)(baseReq))
-      c.fetch(req) { resp =>
+      c.run(req).use { resp =>
         if(resp.status.isSuccess)
           resp.as[B].map {
             (_, getNextUri(resp))
