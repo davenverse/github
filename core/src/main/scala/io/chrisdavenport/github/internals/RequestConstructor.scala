@@ -2,7 +2,7 @@ package io.chrisdavenport.github.internals
 
 import cats._
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import fs2._
 import org.http4s._
 import org.http4s.implicits._

@@ -1,6 +1,6 @@
 package io.chrisdavenport.github.data
 
-import cats.implicits._
+import cats.syntax.all._
 import io.circe.Decoder
 import io.circe.HCursor
 

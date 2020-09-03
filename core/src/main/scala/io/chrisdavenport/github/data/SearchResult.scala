@@ -1,7 +1,7 @@
 package io.chrisdavenport.github.data
 
 import io.circe.Decoder
-import cats.implicits._
+import cats.syntax.all._
 
 case class SearchResult[A](totalCount: Int, incompleteResults: Boolean, items: List[A])
 

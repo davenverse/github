@@ -1,6 +1,6 @@
 package io.chrisdavenport.github.endpoints.repositories
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.data._
 import cats.effect._
 

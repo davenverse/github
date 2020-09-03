@@ -2,7 +2,7 @@ package io.chrisdavenport.github.endpoints.repositories
 
 import cats.data._
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 
 import io.chrisdavenport.github.Auth
 import io.chrisdavenport.github.data.Repositories._

@@ -1,7 +1,7 @@
 package io.chrisdavenport.github.endpoints.utils
 
 import org.http4s.{Header, Uri}
-import cats.implicits._
+import cats.syntax.all._
 
 /**
  * Can be mixed-in to simulate pagination in tests

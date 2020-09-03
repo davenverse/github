@@ -1,7 +1,7 @@
 package io.chrisdavenport.github.data
 
 import cats._
-import cats.implicits._
+import cats.syntax.all._
 
 import io.circe._
 import io.circe.syntax._
