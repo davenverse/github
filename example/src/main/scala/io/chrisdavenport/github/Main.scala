@@ -1,6 +1,6 @@
 package io.chrisdavenport.github
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect._
 import cats.data.Kleisli
 

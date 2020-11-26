@@ -1,6 +1,6 @@
 package io.chrisdavenport.github.data
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect._
 import org.http4s.Uri
 import org.http4s.circe._

@@ -1,6 +1,6 @@
 package io.chrisdavenport.github.endpoints.gitdata
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.data.Kleisli
 import cats.effect._
 import org.http4s._

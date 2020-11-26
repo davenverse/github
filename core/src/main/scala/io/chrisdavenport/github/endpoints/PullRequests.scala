@@ -1,6 +1,6 @@
 package io.chrisdavenport.github.endpoints
 
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect._
 import io.chrisdavenport.github.data.Issues
 import io.chrisdavenport.github.data.PullRequests._
