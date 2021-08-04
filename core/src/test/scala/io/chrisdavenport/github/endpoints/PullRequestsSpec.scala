@@ -3,8 +3,6 @@ package io.chrisdavenport.github.endpoints
 import cats.effect._
 import cats.effect.testing.specs2.CatsEffect
 
-import io.circe.literal._
-
 import io.chrisdavenport.github.data.Issues
 
 import org.http4s._
@@ -15,11 +13,13 @@ import org.http4s.implicits._
 
 import org.specs2.mutable.Specification
 
+import _root_.io.circe.parser._
+
 class PullRequestsSpec extends Specification with CatsEffect {
 
   "PullRequests endpoints" should {
     "return right List pull requests for default resp from api guide" in {
-val json = json"""
+val json = parse("""
 [
   {
     "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
@@ -509,7 +509,8 @@ val json = json"""
     "draft": false
   }
 ]
-"""
+""").toOption.get
+
       val client = Client.fromHttpApp(
         HttpRoutes.of[IO]{
           case GET -> Root / "repos" / _ / _ / "pulls" =>
@@ -526,7 +527,7 @@ val json = json"""
     }
 
     "return right Get a single pull request for default resp from api guide" in {
-      val json = json"""
+      val json = parse("""
       {
         "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
         "id": 1,
@@ -1045,7 +1046,7 @@ val json = json"""
         "deletions": 3,
         "changed_files": 5
       }
-      """
+      """).toOption.get
       val client = Client.fromHttpApp(
         HttpRoutes.of[IO]{
           case GET -> Root / "repos" / _ / _ / "pulls" / _ =>

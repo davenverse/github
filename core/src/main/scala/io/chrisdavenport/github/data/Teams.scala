@@ -17,7 +17,7 @@ object Teams {
     case object Push extends Permission
     case object Admin extends Permission
 
-    implicit val encoder = new Encoder[Permission]{
+    implicit val encoder: Encoder[Permission] = new Encoder[Permission]{
       def apply(a: Permission): Json = a match {
         case Pull => "pull".asJson
         case Push => "push".asJson
@@ -30,7 +30,7 @@ object Teams {
     permission: Permission
   )
   object AddTeamRepoPermission {
-    implicit val encoder = new Encoder[AddTeamRepoPermission]{
+    implicit val encoder: Encoder[AddTeamRepoPermission] = new Encoder[AddTeamRepoPermission]{
       def apply(a: AddTeamRepoPermission): Json = Json.obj(
         "permissions" -> a.permission.asJson
       )

@@ -1,8 +1,8 @@
 package io.chrisdavenport.github
 
-import cats.implicits._
+// import cats.implicits._
 import cats.effect._
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.client.BlazeClientBuilder
 import java.{util => ju}
 import endpoints.repositories.Content
 object GetFileContent extends IOApp {
@@ -10,7 +10,7 @@ object GetFileContent extends IOApp {
   def run(args: List[String]): IO[ExitCode] = {
     for {
       c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
-      out <- Resource.liftF(
+      out <- Resource.eval(
           Content.contentsFor[IO](
             "ChristopherDavenport",
             "github",
@@ -19,7 +19,7 @@ object GetFileContent extends IOApp {
             None
           ).run(c)
         )
-      _ <- Resource.liftF(out match {
+      _ <- Resource.eval(out match {
         case data.Content.Content.File(data) => 
           val out = decodeBase64(data.content)
           IO(println(out))

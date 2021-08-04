@@ -5,7 +5,6 @@ import cats.effect.testing.specs2.CatsEffect
 
 import io.chrisdavenport.github._
 import io.chrisdavenport.github.data.Gists._
-import io.chrisdavenport.github.endpoints.Gists
 import io.chrisdavenport.github.endpoints.utils.JsonFiles
 
 import org.http4s._

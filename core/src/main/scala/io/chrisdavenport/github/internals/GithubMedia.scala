@@ -6,13 +6,13 @@ import org.http4s._
 import org.http4s.circe._
 
 object GithubMedia extends CirceEntityDecoder {
-  implicit def jsonEncoder[F[_]: Applicative, A: Encoder] ={
+  implicit def jsonEncoder[F[_]: Applicative, A: Encoder]: EntityEncoder[F, A] = {
     val json = jsonEncoderOf[F, A]
 
     new EntityEncoder[F, A]{
       def headers: Headers = 
-        Headers.of(
-          Header("Accept", "application/vnd.github.v3+json")
+        Headers(
+          ("Accept", "application/vnd.github.v3+json"),
         ) ++ json.headers
       def toEntity(a: A): Entity[F] = json.toEntity(a)
     }

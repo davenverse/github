@@ -42,7 +42,7 @@ object Users {
   def getAllUsers[F[_]: Sync](
     since: Option[String],
     auth: Option[Auth]
-  ): Kleisli[Stream[F, ?], Client[F], List[SimpleOwner]] = 
+  ): Kleisli[({ type S[A] = Stream[F, A]})#S, Client[F], List[SimpleOwner]] = 
     RequestConstructor.runPaginatedRequest[F, List[SimpleOwner]](
       auth,
       uri"users".withOptionQueryParam("since", since)

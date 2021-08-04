@@ -13,7 +13,7 @@ object Content {
     case object File extends ContentItemType
     case object Dir extends ContentItemType
 
-    implicit val decoder = new Decoder[ContentItemType]{
+    implicit val decoder: Decoder[ContentItemType] = new Decoder[ContentItemType]{
       def apply(c: HCursor): Decoder.Result[ContentItemType] = 
         c.as[String].flatMap{
           case "file" => File.pure[Decoder.Result]
@@ -33,7 +33,7 @@ object Content {
     htmlUri: Uri
   )
   object ContentInfo {
-    implicit val decoder = new Decoder[ContentInfo]{
+    implicit val decoder: Decoder[ContentInfo] = new Decoder[ContentInfo]{
       def apply(c: HCursor): Decoder.Result[ContentInfo] = 
         (
           c.downField("name").as[String],
@@ -52,7 +52,7 @@ object Content {
   )
 
   object ContentItem {
-    implicit val decoder = new Decoder[ContentItem]{
+    implicit val decoder: Decoder[ContentItem] = new Decoder[ContentItem]{
       def apply(c: HCursor): Decoder.Result[ContentItem] = 
         (
           c.downField("type").as[ContentItemType],
@@ -66,13 +66,13 @@ object Content {
     final case class File(data: ContentFileData) extends Content
     final case class Directory(data: List[ContentItem]) extends Content
 
-    implicit val decoder = new Decoder[Content]{
+    implicit val decoder: Decoder[Content] = new Decoder[Content]{
       def apply(c: HCursor): Decoder.Result[Content] = 
         ContentFileData.decoder(c)
           .map(File(_))
           .orElse(
             c.as[List[ContentItem]]
-              .map(Directory)
+              .map(Directory(_))
           )
     }
   }
@@ -83,7 +83,7 @@ object Content {
     content: String
   )
   object ContentFileData {
-    implicit val decoder = new Decoder[ContentFileData]{
+    implicit val decoder: Decoder[ContentFileData] = new Decoder[ContentFileData]{
       def apply(c: HCursor): Decoder.Result[ContentFileData] = 
         (
           ContentInfo.decoder(c),
@@ -99,7 +99,7 @@ object Content {
     size: Int
   )
   object ContentResultInfo{
-    implicit val decoder = new Decoder[ContentResultInfo]{
+    implicit val decoder: Decoder[ContentResultInfo] = new Decoder[ContentResultInfo]{
       def apply(c: HCursor): Decoder.Result[ContentResultInfo] = 
         (
           ContentInfo.decoder(c),
@@ -114,7 +114,7 @@ object Content {
   )
 
   object ContentResult {
-    implicit val decoder = new Decoder[ContentResult]{
+    implicit val decoder: Decoder[ContentResult] = new Decoder[ContentResult]{
       def apply(c: HCursor): Decoder.Result[ContentResult] = 
         c.downField("content")
           .as[ContentResultInfo]
@@ -129,7 +129,7 @@ object Content {
   )
 
   object Author {
-    implicit val encoder = new Encoder[Author]{
+    implicit val encoder: Encoder[Author] = new Encoder[Author]{
       def apply(a: Author): Json = Json.obj(
         "name" -> a.name.asJson,
         "email" -> a.email.asJson
@@ -146,7 +146,7 @@ object Content {
     committer: Option[Author]
   )
   object CreateFile {
-    implicit val encoder = new Encoder[CreateFile]{
+    implicit val encoder: Encoder[CreateFile] = new Encoder[CreateFile]{
       def apply(a: CreateFile): Json = Json.obj(
         "path" -> a.path.asJson,
         "message" -> a.message.asJson,
@@ -170,7 +170,7 @@ object Content {
 
 
   object UpdateFile {
-    implicit val encoder = new Encoder[UpdateFile]{
+    implicit val encoder: Encoder[UpdateFile] = new Encoder[UpdateFile]{
       def apply(a: UpdateFile): Json = Json.obj(
         "path" -> a.path.asJson,
         "message" -> a.message.asJson,
@@ -193,7 +193,7 @@ object Content {
   )
 
   object DeleteFile {
-    implicit val encoder = new Encoder[DeleteFile]{
+    implicit val encoder: Encoder[DeleteFile] = new Encoder[DeleteFile]{
       def apply(a: DeleteFile): Json = Json.obj(
         "path" -> a.path.asJson,
         "message" -> a.message.asJson,

@@ -13,14 +13,14 @@ object Issues {
     case object Open extends IssueState
     case object Closed extends IssueState
 
-    implicit val encoder = new Encoder[IssueState]{
+    implicit val encoder: Encoder[IssueState] = new Encoder[IssueState]{
       def apply(a: IssueState): Json = a match {
         case Open => "open".asJson
         case Closed => "closed".asJson
       }
     }
 
-    implicit val decoder = new Decoder[IssueState]{
+    implicit val decoder: Decoder[IssueState] = new Decoder[IssueState]{
       def apply(c: HCursor): Decoder.Result[IssueState] = 
         c.as[String].flatMap{
           case "open" => Open.asRight
@@ -32,10 +32,10 @@ object Issues {
 
   final case class IssueNumber(toInt: Int) extends AnyVal
   object IssueNumber {
-    implicit val decoder = new Decoder[IssueNumber]{
+    implicit val decoder: Decoder[IssueNumber] = new Decoder[IssueNumber]{
       def apply(c: HCursor): Decoder.Result[IssueNumber] = c.as[Int].map(IssueNumber(_))
     }
-    implicit val encoder = new Encoder[IssueNumber]{
+    implicit val encoder: Encoder[IssueNumber] = new Encoder[IssueNumber]{
       def apply(a: IssueNumber): Json = a.toInt.asJson
     }
   }
@@ -46,7 +46,7 @@ object Issues {
     color: String, 
   )
   object IssueLabel {
-    implicit val decoder = new Decoder[IssueLabel]{
+    implicit val decoder: Decoder[IssueLabel] = new Decoder[IssueLabel]{
       def apply(c: HCursor): Decoder.Result[IssueLabel] = 
         (
           c.downField("name").as[String],

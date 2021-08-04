@@ -69,7 +69,7 @@ object References {
     repo: String,
     refLike: String,
     auth: Option[Auth]
-  ): Kleisli[Stream[F, ?], Client[F], List[GitReference]] = 
+  ): Kleisli[({ type S[A] = Stream[F, A]})#S, Client[F], List[GitReference]] = 
   RequestConstructor.runPaginatedRequest[F, List[GitReference]](
     auth,
     uri"repos" / owner / repo / "git" / "matching-refs" / refLike

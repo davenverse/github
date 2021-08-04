@@ -33,7 +33,7 @@ trait PaginatedJsonFiles extends JsonFiles with Paginate {
   private def pages(numPages: Int): Map[Int, Json] =
     getPageContents(numPages, pageFileName)
 
-  private def links(numPages: Int): Map[Int, Header] =
+  private def links(numPages: Int): Map[Int, Header.Raw] =
     paginate(baseUri, numPages)
 
 }

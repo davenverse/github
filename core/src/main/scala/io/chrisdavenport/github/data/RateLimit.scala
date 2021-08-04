@@ -11,7 +11,7 @@ object RateLimit {
     reset: Int
   )
   object Limits {
-    implicit val decoder = new Decoder[Limits]{
+    implicit val decoder: Decoder[Limits] = new Decoder[Limits]{
       def apply(c: HCursor): Decoder.Result[Limits] = 
         (
           c.downField("limit").as[Int],
@@ -28,7 +28,7 @@ object RateLimit {
     integrationManifest: Limits
   )
   object RateLimit {
-    implicit val decoder = new Decoder[RateLimit]{
+    implicit val decoder: Decoder[RateLimit] = new Decoder[RateLimit]{
       def apply(c: HCursor): Decoder.Result[RateLimit] = {
         val base = c.downField("resources")
         (

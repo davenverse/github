@@ -3,7 +3,7 @@ package io.chrisdavenport.github.endpoints.miscellaneous
 import cats.effect._
 import cats.effect.testing.specs2.CatsEffect
 
-import io.circe.literal._
+import io.circe.parser._
 
 import org.http4s._
 import org.http4s.client._
@@ -29,7 +29,7 @@ class RateLimitSpec extends Specification with CatsEffect {
   val rateLimit : HttpRoutes[IO] = HttpRoutes.of {
     case GET -> Root / "rate_limit" =>
       Ok(
-        json"""
+        parse("""
         {
           "resources": {
             "core": {
@@ -59,7 +59,7 @@ class RateLimitSpec extends Specification with CatsEffect {
             "reset": 1372700873
           }
         }
-      """
+      """).toOption.get
       )
   }
 
