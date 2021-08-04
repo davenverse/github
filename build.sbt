@@ -1,13 +1,13 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.6")
+ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.6", "3.0.1")
 
 val catsV = "2.6.1"
 val catsEffectV = "3.2.1"
 val fs2V = "3.0.6"
 val http4sV = "0.23.0"
 val circeV = "0.14.1"
-val catsEffectTestingV = "1.0.0-M1"
+val catsEffectTestingV = "1.2.0"
 val log4catsV = "2.1.1"
 val logbackClassicV = "1.2.3"
 
@@ -46,7 +46,7 @@ lazy val core = project.in(file("core"))
       
       ("org.specs2"                  %% "specs2-core"                % specs2V       % Test).cross(CrossVersion.for3Use2_13),
       ("org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test).cross(CrossVersion.for3Use2_13),
-      ("com.codecommit"              %% "cats-effect-testing-specs2" % catsEffectTestingV  % Test).cross(CrossVersion.for3Use2_13)
+      "org.typelevel"              %% "cats-effect-testing-specs2" % catsEffectTestingV  % Test
     )
   )
 
