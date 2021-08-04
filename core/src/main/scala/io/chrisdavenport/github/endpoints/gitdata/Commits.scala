@@ -29,7 +29,7 @@ object Commits {
    * GET /repos/:owner/:repo/git/commits/:commit_sha
    * 
    **/
-  def getCommit[F[_]: Sync](
+  def getCommit[F[_]: Concurrent](
     owner: String,
     repo: String,
     commitSha: String,
@@ -48,7 +48,7 @@ object Commits {
    * 
    * POST /repos/:owner/:repo/git/commits
    **/
-  def createCommit[F[_]: Sync](
+  def createCommit[F[_]: Concurrent](
     owner: String,
     repo: String,
     createCommit: CreateCommit,

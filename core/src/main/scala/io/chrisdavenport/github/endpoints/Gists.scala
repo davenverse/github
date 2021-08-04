@@ -20,7 +20,7 @@ import java.time.ZonedDateTime
 
 object Gists {
 
-  def list[F[_]: Sync](
+  def list[F[_]: Concurrent](
       username: String,
       since: Option[ZonedDateTime],
       auth: Option[Auth]
@@ -35,7 +35,7 @@ object Gists {
    * List all public gists sorted by most recently updated to least recently updated.
    * https://developer.github.com/v3/gists/#list-all-public-gists
    */
-  def allPublic[F[_]: Sync](
+  def allPublic[F[_]: Concurrent](
       since: Option[ZonedDateTime],
       auth: Option[Auth]
   ): Kleisli[Stream[F, *], Client[F], List[Gist]] =
@@ -49,7 +49,7 @@ object Gists {
    * List starred gists by the authenticated user
    * https://developer.github.com/v3/gists/#list-starred-gists
    */
-  def starred[F[_]: Sync](
+  def starred[F[_]: Concurrent](
       since: Option[ZonedDateTime],
       auth: Auth
   ): Kleisli[Stream[F, *], Client[F], List[Gist]] =
@@ -63,7 +63,7 @@ object Gists {
    * Get a single gist by its id
    * https://developer.github.com/v3/gists/#get-a-single-gist
    */
-  def get[F[_]: Sync](
+  def get[F[_]: Concurrent](
       gistId: String,
       auth: Option[Auth]
   ): Kleisli[F, Client[F], Gist] =
@@ -77,7 +77,7 @@ object Gists {
    * Get a specific revision of a gist
    * https://developer.github.com/v3/gists/#get-a-specific-revision-of-a-gist
    */
-  def getRevision[F[_]: Sync](
+  def getRevision[F[_]: Concurrent](
       gistId: String,
       sha: String,
       auth: Option[Auth]
@@ -92,7 +92,7 @@ object Gists {
    * Creates a new gist
    * https://developer.github.com/v3/gists/#create-a-gist
    */
-  def create[F[_]: Sync](
+  def create[F[_]: Concurrent](
       newGist: CreateGist,
       auth: Auth
   ): Kleisli[F, Client[F], Gist] =
@@ -107,7 +107,7 @@ object Gists {
    * Edit a gist
    * https://developer.github.com/v3/gists/#edit-a-gist
    */
-  def editGist[F[_]: Sync](
+  def editGist[F[_]: Concurrent](
     gistId: String,
     editGist: EditGist,
     auth: Auth
@@ -123,7 +123,7 @@ object Gists {
    * List commits history for a gist
    * https://developer.github.com/v3/gists/#list-gist-commits
    */
-  def listCommits[F[_]: Sync](
+  def listCommits[F[_]: Concurrent](
       gistId: String,
       auth: Auth
   ): Kleisli[F, Client[F], List[GistCommit]] =
@@ -137,7 +137,7 @@ object Gists {
    * Star a gist
    * https://developer.github.com/v3/gists/#star-a-gist
    */
-  def star[F[_]: Sync](
+  def star[F[_]: Concurrent](
       gistId: String,
       auth: Auth
   ): Kleisli[F, Client[F], Unit] =
@@ -145,13 +145,13 @@ object Gists {
       auth.some,
       Method.PUT,
       uri"gists" / gistId / "star"
-    )(Sync[F], EntityDecoder.void[F])
+    )(Concurrent[F], EntityDecoder.void[F])
 
   /**
    * Check if a gist is starred
    * https://developer.github.com/v3/gists/#check-if-a-gist-is-starred
    */
-  def checkStarred[F[_]: Sync](
+  def checkStarred[F[_]: Concurrent](
       gistId: String,
       auth: Auth
   ): Kleisli[F, Client[F], Boolean] =
@@ -160,7 +160,7 @@ object Gists {
         auth.some,
         Method.GET,
         uri"gists" / gistId / "star"
-      )(Sync[F], EntityDecoder.void[F])
+      )(Concurrent[F], EntityDecoder.void[F])
       .map(_ => true)
       .recover {
         case ghError: RequestConstructor.GithubError if ghError.status == Status.NotFound => false
@@ -170,7 +170,7 @@ object Gists {
    * Fork a gist
    * https://developer.github.com/v3/gists/#fork-a-gist
    */
-  def fork[F[_]: Sync](
+  def fork[F[_]: Concurrent](
       gistId: String,
       auth: Auth
   ): Kleisli[F, Client[F], Gist] =
@@ -184,7 +184,7 @@ object Gists {
    * List all gist's forks
    * https://developer.github.com/v3/gists/#list-gist-forks
    */
-  def listForks[F[_]: Sync](
+  def listForks[F[_]: Concurrent](
       gistId: String,
       auth: Auth
   ): Kleisli[F, Client[F], List[GistFork]] =
@@ -198,7 +198,7 @@ object Gists {
    * Delete an existing gist
    * https://developer.github.com/v3/gists/#delete-a-gist
    */
-  def delete[F[_]: Sync](
+  def delete[F[_]: Concurrent](
       gistId: String,
       auth: Auth
   ): Kleisli[F, Client[F], Unit] =
@@ -206,5 +206,5 @@ object Gists {
       auth.some,
       Method.DELETE,
       uri"gists" / gistId
-    )(Sync[F], EntityDecoder.void[F])
+    )(Concurrent[F], EntityDecoder.void[F])
 }

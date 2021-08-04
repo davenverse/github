@@ -20,7 +20,7 @@ object Tags {
    * GET /repos/:owner/:repo/git/tags/:tag_sha
    * 
    **/
-  def getTag[F[_]: Sync](
+  def getTag[F[_]: Concurrent](
     owner: String,
     repo: String,
     tagSha: String,
@@ -44,7 +44,7 @@ object Tags {
    * POST /repos/:owner/:repo/git/tags
    * 
    **/
-  def createTag[F[_]: Sync](
+  def createTag[F[_]: Concurrent](
     owner: String,
     repo: String,
     createTag: CreateTag,
@@ -60,7 +60,7 @@ object Tags {
   /**
    * Like [[createTag]] except that it follows up by also creating the tag
    **/
-  def createTagFull[F[_]: Sync](
+  def createTagFull[F[_]: Concurrent](
     owner: String,
     repo: String,
     createTag: CreateTag,

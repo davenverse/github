@@ -23,7 +23,7 @@ object Blobs {
    *
    * Note: This API supports blobs up to 100 megabytes in size.
    **/
-  def getBlob[F[_]: Sync](
+  def getBlob[F[_]: Concurrent](
     owner: String,
     repo: String,
     sha: String,
@@ -43,7 +43,7 @@ object Blobs {
    * content 	string 	Required. The new blob's content.
    * encoding 	string 	The encoding used for content. Currently, "utf-8" and "base64" are supported. Default: "utf-8".
    */
-  def createBlob[F[_]: Sync](
+  def createBlob[F[_]: Concurrent](
     owner: String,
     repo: String,
     createBlob: CreateBlob,

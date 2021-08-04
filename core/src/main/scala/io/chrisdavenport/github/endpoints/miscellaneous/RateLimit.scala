@@ -15,7 +15,7 @@ object RateLimit {
   /**
    * Get your current rate limit status
    **/
-  def rateLimit[F[_]: Sync](
+  def rateLimit[F[_]: Concurrent](
     auth: Option[Auth]
   ) = RequestConstructor.runRequestWithNoBody[F, DRateLimit.RateLimit](
     auth,

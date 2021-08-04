@@ -24,7 +24,7 @@ object Trees {
    * array exceeded our maximum limit. If you need to fetch more items, you can
    * clone the repository and iterate over the Git data locally.
    **/
-  def getTree[F[_]: Sync](
+  def getTree[F[_]: Concurrent](
     owner: String,
     repo: String,
     treeSha: String,
@@ -39,7 +39,7 @@ object Trees {
   /**
    * Same as [[getTree]] but retrieves the full tree, meaning also the files in subdirectories.
    **/
-  def getTreeRecursive[F[_]: Sync](
+  def getTreeRecursive[F[_]: Concurrent](
     owner: String,
     repo: String,
     treeSha: String,
@@ -66,7 +66,7 @@ object Trees {
    * POST /repos/:owner/:repo/git/trees
    * 
    **/
-  def createTree[F[_]: Sync](
+  def createTree[F[_]: Concurrent](
     owner: String,
     repo: String,
     createTree: CreateTree,

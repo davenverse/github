@@ -40,7 +40,7 @@ object References {
    * 
    * GET /repos/:owner/:repo/git/ref/:ref
    **/
-  def getReference[F[_]: Sync](
+  def getReference[F[_]: Concurrent](
     owner: String,
     repo: String,
     ref: String,
@@ -64,7 +64,7 @@ object References {
    * 
    * Anything in the namespace is returned, not just heads and tags. 
    **/
-  def matchingReferences[F[_]: Sync](
+  def matchingReferences[F[_]: Concurrent](
     owner: String,
     repo: String,
     refLike: String,
@@ -85,7 +85,7 @@ object References {
    * 
    * POST /repos/:owner/:repo/git/refs
    **/
-  def createReference[F[_]: Sync](
+  def createReference[F[_]: Concurrent](
     owner: String,
     repo: String,
     createReference: CreateReference,
@@ -103,7 +103,7 @@ object References {
    * 
    * PATCH /repos/:owner/:repo/git/refs/:ref
    **/
-  def updateReference[F[_]: Sync](
+  def updateReference[F[_]: Concurrent](
     owner: String,
     repo: String,
     ref: String,
@@ -122,7 +122,7 @@ object References {
    * 
    * DELETE /repos/:owner/:repo/git/refs/:ref
    **/
-  def deleteReference[F[_]: Sync](
+  def deleteReference[F[_]: Concurrent](
     owner: String,
     repo: String,
     ref: String,

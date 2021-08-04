@@ -51,7 +51,7 @@ object Main extends IOApp {
             auth
           )
           _ <- Kleisli.liftF(logger.debug(s"Repo Created $repoO"))
-          _ <- Kleisli.liftF(Timer[IO].sleep(10.seconds))
+          _ <- Kleisli.liftF(Temporal[IO].sleep(10.seconds))
           file <- createFile[IO](
             owner,
             repo,

@@ -23,7 +23,7 @@ object Search {
    * @param auth The authentication mechanism
    * @tparam F The effect type
    */
-  def repository[F[_]: Sync](
+  def repository[F[_]: Concurrent](
     q: String,
     sort: Option[Sort.Repository],
     order: Option[Order],
@@ -46,7 +46,7 @@ object Search {
    * @param auth The authentication mechanism
    * @tparam F The effect type
    */
-  def users[F[_]: Sync](
+  def users[F[_]: Concurrent](
     q: String,
     sort: Option[Sort.User],
     order: Option[Order],

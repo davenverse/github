@@ -16,7 +16,7 @@ object Teams {
 
   // Add or update team repository
   // https://developer.github.com/v3/teams/#add-or-update-team-repository
-  def addOrUpdateTeamRepo[F[_]: Sync](
+  def addOrUpdateTeamRepo[F[_]: Concurrent](
     teamId: Int,
     organization: String,
     repoName: String,
