@@ -15,21 +15,21 @@ import io.chrisdavenport.github.internals.RequestConstructor
 
 object Users {
 
-  def userInfoFor[F[_]: Sync](username: String, auth: Option[Auth]): Kleisli[F, Client[F], User] = 
+  def userInfoFor[F[_]: Concurrent](username: String, auth: Option[Auth]): Kleisli[F, Client[F], User] = 
     RequestConstructor.runRequestWithNoBody[F, User](
       auth,
       Method.GET,
       uri"users" / username
     )
 
-  def ownerInfoFor[F[_]: Sync](owner: String, auth: Option[Auth]): Kleisli[F, Client[F], Owner] =
+  def ownerInfoFor[F[_]: Concurrent](owner: String, auth: Option[Auth]): Kleisli[F, Client[F], Owner] =
     RequestConstructor.runRequestWithNoBody[F, Owner](
       auth,
       Method.GET,
       uri"users" / owner
     )
 
-  def userInfoAuthenticatedUser[F[_]: Sync](auth: Auth): Kleisli[F, Client[F], User] = 
+  def userInfoAuthenticatedUser[F[_]: Concurrent](auth: Auth): Kleisli[F, Client[F], User] = 
     RequestConstructor.runRequestWithNoBody[F, User](
       auth.some,
       Method.GET,
@@ -39,7 +39,7 @@ object Users {
   // We expose this as the returned list for each request
   // that way users can monitor how many requests they make
   // and can know where they stand in regards to their cap.
-  def getAllUsers[F[_]: Sync](
+  def getAllUsers[F[_]: Concurrent](
     since: Option[String],
     auth: Option[Auth]
   ): Kleisli[({ type S[A] = Stream[F, A]})#S, Client[F], List[SimpleOwner]] = 
@@ -52,7 +52,7 @@ object Users {
   // if null values are removed entirely, so
   // for the first draft dropNull values
   // possibly in the future rework
-  def updateAuthenticatedUser[F[_]: Sync](
+  def updateAuthenticatedUser[F[_]: Concurrent](
     auth: Auth,
     name: Option[String],
     email: Option[String],

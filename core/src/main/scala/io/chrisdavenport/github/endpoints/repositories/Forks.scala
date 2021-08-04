@@ -20,7 +20,7 @@ object Forks {
   /**
    * Create a fork for the authenticated user.
    **/
-  def create[F[_]: Sync](
+  def create[F[_]: Concurrent](
     owner: String, 
     repo: String,
     auth: Auth
@@ -34,7 +34,7 @@ object Forks {
   /**
    * List all forks
    **/
-  def list[F[_]: Sync](
+  def list[F[_]: Concurrent](
     owner: String,
     repo: String,
     sort: Option[Sort.Fork],

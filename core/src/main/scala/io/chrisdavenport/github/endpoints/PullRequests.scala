@@ -13,7 +13,7 @@ import io.chrisdavenport.github.internals.RequestConstructor
 
 object PullRequests {
 
-  def pullRequestsFor[F[_]: Sync](
+  def pullRequestsFor[F[_]: Concurrent](
     owner: String,
     name: String,
     auth: Option[Auth]
@@ -22,7 +22,7 @@ object PullRequests {
     uri"repos" / owner / name / "pulls"
   )
 
-  def pullRequest[F[_]: Sync](
+  def pullRequest[F[_]: Concurrent](
     owner: String,
     name: String,
     issueNumber: Issues.IssueNumber,
@@ -33,7 +33,7 @@ object PullRequests {
     uri"repos" / owner / name / "pulls" / issueNumber.toInt.toString
   )
 
-  def createPullRequest[F[_]: Sync](
+  def createPullRequest[F[_]: Concurrent](
     owner: String,
     name: String,
     createPullRequest: CreatePullRequest,
@@ -45,7 +45,7 @@ object PullRequests {
     createPullRequest
   )
 
-  def updatePullRequest[F[_]: Sync](
+  def updatePullRequest[F[_]: Concurrent](
     owner: String,
     name: String,
     issueNumber: Issues.IssueNumber,

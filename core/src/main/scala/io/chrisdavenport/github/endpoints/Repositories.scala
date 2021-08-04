@@ -14,7 +14,7 @@ import io.chrisdavenport.github.internals.RequestConstructor
 
 object Repositories {
 
-  def repository[F[_]: Sync](
+  def repository[F[_]: Concurrent](
     owner: String,
     repo: String,
     auth: Option[Auth]
@@ -27,7 +27,7 @@ object Repositories {
     )
   }
 
-  def createRepo[F[_]: Sync](
+  def createRepo[F[_]: Concurrent](
     newRepo: NewRepo,
     auth: Auth
   ): Kleisli[F, Client[F], Repo] = {
@@ -40,7 +40,7 @@ object Repositories {
     )
   }
 
-  def createOrganizationRepo[F[_]: Sync](
+  def createOrganizationRepo[F[_]: Concurrent](
     org: String,
     newRepo: NewRepo,
     auth: Auth
@@ -54,7 +54,7 @@ object Repositories {
     )
   }
 
-  def edit[F[_]: Sync](
+  def edit[F[_]: Concurrent](
     owner: String,
     repo: String,
     editRepo: EditRepo,
@@ -72,7 +72,7 @@ object Repositories {
   /**
    * Deleting a repository requires admin access. If OAuth is used, the delete_repo scope is required.
    **/
-  def delete[F[_]: Sync](
+  def delete[F[_]: Concurrent](
     owner: String,
     repo: String,
     auth: Auth

@@ -1,7 +1,7 @@
 package io.chrisdavenport.github.internals
 
 import cats._
-import cats.effect.{MonadThrow => _, _}
+import cats.effect._
 import cats.implicits._
 import fs2._
 import org.http4s.implicits._
@@ -17,7 +17,7 @@ import scala.util.matching.Regex
 
 object RequestConstructor {
 
-  def runRequestWithNoBody[F[_]: Sync, B]
+  def runRequestWithNoBody[F[_]: Concurrent, B]
   (
     auth: Option[Auth],
     method: Method,
@@ -25,7 +25,7 @@ object RequestConstructor {
   )(implicit B: EntityDecoder[F, B]): Kleisli[F, Client[F], B] =
     runRequest[F, Unit, B](auth, method, extendedUri, None)
 
-  def runRequestWithBody[F[_]: Sync, A, B](
+  def runRequestWithBody[F[_]: Concurrent, A, B](
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
@@ -33,7 +33,7 @@ object RequestConstructor {
   )(implicit A: EntityEncoder[F, A], B: EntityDecoder[F, B]): Kleisli[F, Client[F], B] =
     runRequest[F, A, B](auth, method, extendedUri, body.some)
 
-  def runRequest[F[_]: Sync, A, B](
+  def runRequest[F[_]: Concurrent, A, B](
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
@@ -47,7 +47,7 @@ object RequestConstructor {
     c.expectOr[B](req)(resp => 
       
       resp.bodyText.compile.string.flatMap(body => 
-        Sync[F].raiseError(new GithubError(resp.status, body))
+        Concurrent[F].raiseError(new GithubError(resp.status, body))
       )
     )
   }
@@ -76,7 +76,7 @@ object RequestConstructor {
     }
   } 
 
-  def runPaginatedRequest[F[_]: Sync, B](
+  def runPaginatedRequest[F[_]: Concurrent, B](
     auth: Option[Auth],
     extendedUri: Uri,
   )(implicit E: EntityDecoder[F, B]):  Kleisli[({ type S[A] = Stream[F, A]})#S, Client[F], B] = Kleisli{ c =>
@@ -92,7 +92,7 @@ object RequestConstructor {
           }
         else
           resp.bodyText.compile.string.flatMap(body => 
-            Sync[F].raiseError[(B, Option[Uri])](new GithubError(resp.status, body))
+            Concurrent[F].raiseError[(B, Option[Uri])](new GithubError(resp.status, body))
           )
       }
     }

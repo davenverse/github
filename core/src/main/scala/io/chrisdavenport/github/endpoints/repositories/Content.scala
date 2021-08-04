@@ -13,7 +13,7 @@ import io.chrisdavenport.github.internals.GithubMedia._
 import io.chrisdavenport.github.internals.RequestConstructor
 
 object Content {
-  def contentsFor[F[_]: Sync](
+  def contentsFor[F[_]: Concurrent](
     owner: String,
     repo: String,
     path: String,
@@ -27,7 +27,7 @@ object Content {
         .withOptionQueryParam("ref", ref)
     )
 
-  def readmeFor[F[_]: Sync](
+  def readmeFor[F[_]: Concurrent](
     owner: String,
     repo: String,
     auth: Option[Auth]
@@ -38,7 +38,7 @@ object Content {
       uri"repos" / owner / repo / "readme"
     )
 
-  def createFile[F[_]: Sync](
+  def createFile[F[_]: Concurrent](
     owner: String,
     repo: String,
     createFile: CreateFile,
@@ -50,7 +50,7 @@ object Content {
     createFile
   )
 
-  def updateFile[F[_]: Sync](
+  def updateFile[F[_]: Concurrent](
     owner: String,
     repo: String,
     updateFile: UpdateFile,
@@ -62,7 +62,7 @@ object Content {
     updateFile
   )
 
-  def deleteFile[F[_]: Sync](
+  def deleteFile[F[_]: Concurrent](
     owner: String,
     repo: String,
     deleteFile: DeleteFile,
