@@ -28,6 +28,10 @@ lazy val core = project.in(file("core"))
       if (isDotty.value) Seq("-language:postfixOps")
       else Seq()
     },
+    mimaVersionCheckExcludedVersions := {
+      if (isDotty.value) Set("0.3.0")
+      else Set()
+    },
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := "io.chrisdavenport.github",
     libraryDependencies ++= Seq(
