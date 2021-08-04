@@ -1,8 +1,7 @@
 package io.chrisdavenport.github.data
 
 import cats.implicits._
-import cats.effect._
-import org.http4s.Uri
+import org.http4s._
 import org.http4s.circe._
 import java.time.ZonedDateTime
 
@@ -15,7 +14,7 @@ object Users {
     object User extends OwnerType
     object Organization extends OwnerType
 
-    implicit val ownerTypeDecoder = new Decoder[OwnerType]{
+    implicit val ownerTypeDecoder: Decoder[OwnerType] = new Decoder[OwnerType]{
       def apply(c: HCursor): Decoder.Result[OwnerType] =
         c.as[String].flatMap{
           case "User" => User.pure[Decoder.Result]
@@ -42,7 +41,7 @@ object Users {
     avatarUri: Uri
   ) extends SimpleOwner
   object SimpleUser {
-    implicit val simpleUserDecoder = new Decoder[SimpleUser]{
+    implicit val simpleUserDecoder: Decoder[SimpleUser] = new Decoder[SimpleUser]{
       def apply(c: HCursor): Decoder.Result[SimpleUser] =
         (
           c.downField("id").as[Int],
@@ -60,7 +59,7 @@ object Users {
     avatarUri: Uri,
   ) extends SimpleOwner
   object SimpleOrganization {
-    implicit val simpleOrganizationDecoder = new Decoder[SimpleOrganization]{
+    implicit val simpleOrganizationDecoder: Decoder[SimpleOrganization] = new Decoder[SimpleOrganization]{
       def apply(c: HCursor): Decoder.Result[SimpleOrganization] =
       (
         c.downField("id").as[Int],
@@ -72,7 +71,7 @@ object Users {
   }
 
   object SimpleOwner {
-    implicit val simpleOwnerDecoder = new Decoder[SimpleOwner]{
+    implicit val simpleOwnerDecoder: Decoder[SimpleOwner] = new Decoder[SimpleOwner]{
       def apply(c: HCursor): Decoder.Result[SimpleOwner] =
         c.downField("type").as[OwnerType].flatMap{
           case OwnerType.Organization =>
@@ -104,7 +103,7 @@ object Users {
     avatarUri: Uri,
   ) extends Owner
   object User {
-    implicit val userDecoder = new Decoder[User]{
+    implicit val userDecoder: Decoder[User] = new Decoder[User]{
       def apply(c: HCursor): Decoder.Result[User] =
         (
           c.downField("id").as[Int],
@@ -126,7 +125,6 @@ object Users {
           c.downField("avatar_url").as[Uri]
         ).mapN(User.apply)
     }
-    implicit def userEntityDecoder[F[_]: Sync] = jsonDecoder[F]
   }
 
   final case class Organization(
@@ -147,7 +145,7 @@ object Users {
     avatarUri: Uri,
   ) extends Owner
   object Organization {
-    implicit val organizationDecoder = new Decoder[Organization]{
+    implicit val organizationDecoder: Decoder[Organization] = new Decoder[Organization]{
       def apply(c: HCursor): Decoder.Result[Organization] =
         (
           c.downField("id").as[Int],
@@ -169,7 +167,7 @@ object Users {
     }
   }
   object Owner {
-    implicit val ownerDecoder = new Decoder[Owner]{
+    implicit val ownerDecoder: Decoder[Owner] = new Decoder[Owner]{
       def apply(c: HCursor): Decoder.Result[Owner] =
         c.downField("type").as[OwnerType].flatMap{
           case OwnerType.User =>

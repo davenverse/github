@@ -1,13 +1,13 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.6")
+ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.6", "3.0.1")
 
 val catsV = "2.6.1"
 val catsEffectV = "2.5.2"
 val fs2V = "2.5.9"
 val http4sV = "0.22.1"
 val circeV = "0.14.1"
-val catsEffectTestingV = "0.4.0"
+val catsEffectTestingV = "0.5.4"
 val log4catsV = "1.3.1"
 val logbackClassicV = "1.2.3"
 
@@ -26,6 +26,10 @@ lazy val core = project.in(file("core"))
   .settings(
     name := "github",
     scalacOptions -= "-Xfatal-warnings",
+    scalacOptions ++= {
+      if (isDotty.value) Seq("-language:postfixOps")
+      else Seq()
+    },
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := "io.chrisdavenport.github",
     libraryDependencies ++= Seq(

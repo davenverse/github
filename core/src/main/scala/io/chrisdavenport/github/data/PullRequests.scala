@@ -20,7 +20,7 @@ object PullRequests {
     current: Uri
   )
   object PullRequestLinks {
-    implicit val decoder = new Decoder[PullRequestLinks]{
+    implicit val decoder: Decoder[PullRequestLinks] = new Decoder[PullRequestLinks]{
       def apply(c: HCursor): Decoder.Result[PullRequestLinks] =
         (
           c.downField("review_comments").downField("href").as[Uri],
@@ -40,7 +40,7 @@ object PullRequests {
     case object Blocked extends MergeableState
     case object Behind extends MergeableState
 
-    implicit val decoder = new Decoder[MergeableState]{
+    implicit val decoder: Decoder[MergeableState] = new Decoder[MergeableState]{
       def apply(c: HCursor): Decoder.Result[MergeableState] =
         c.as[String].flatMap{
           case "unknown" => Unknown.asRight
@@ -52,7 +52,7 @@ object PullRequests {
           case other => DecodingFailure(s"MergeableState got: $other", c.history).asLeft
         }
     }
-    implicit val encoder = new Encoder[MergeableState]{
+    implicit val encoder:  Encoder[MergeableState] = new Encoder[MergeableState]{
       def apply(a: MergeableState): Json = a match {
         case Unknown =>  "unknown".asJson
         case Clean => "clean".asJson
@@ -85,7 +85,7 @@ object PullRequests {
     requestLinks: PullRequestLinks
   )
   object SimplePullRequest {
-    implicit val decoder = new Decoder[SimplePullRequest]{
+    implicit val decoder: Decoder[SimplePullRequest] = new Decoder[SimplePullRequest]{
       def apply(c: HCursor): Decoder.Result[SimplePullRequest] =
         (
           c.downField("state").as[Issues.IssueState],
@@ -119,7 +119,7 @@ object PullRequests {
     repo: Option[Repositories.Repo]
   )
   object PullRequestCommit {
-    implicit val decoder = new Decoder[PullRequestCommit]{
+    implicit val decoder: Decoder[PullRequestCommit] = new Decoder[PullRequestCommit]{
       def apply(c: HCursor): Decoder.Result[PullRequestCommit] =
         (
           c.downField("label").as[String],
@@ -165,7 +165,7 @@ object PullRequests {
   )
 
   object PullRequest {
-    implicit val decoder = new Decoder[PullRequest]{
+    implicit val decoder: Decoder[PullRequest] = new Decoder[PullRequest]{
       def apply(c: HCursor): Decoder.Result[PullRequest] = for {
         state: Issues.IssueState <- c.downField("state").as[Issues.IssueState]
         number: Issues.IssueNumber <- c.downField("number").as[Issues.IssueNumber]
@@ -243,7 +243,7 @@ object PullRequests {
     maintainerCanModify: Option[Boolean]
   )
   object EditPullRequest {
-    implicit val encoder = new Encoder[EditPullRequest]{
+    implicit val encoder: Encoder[EditPullRequest] = new Encoder[EditPullRequest]{
       def apply(a: EditPullRequest): Json = Json.obj(
         "title" -> a.title.asJson,
         "body" -> a.body.asJson,
@@ -268,7 +268,7 @@ object PullRequests {
       base: String
     ) extends CreatePullRequest
 
-    implicit val encoder = new Encoder[CreatePullRequest]{
+    implicit val encoder: Encoder[CreatePullRequest] = new Encoder[CreatePullRequest]{
       def apply(a: CreatePullRequest): Json = a match {
         case PullRequest(title, body, head, base) =>
           Json.obj(
@@ -301,7 +301,7 @@ object PullRequests {
     case object ReviewRequestRemoved extends PullRequestEventType
     case object Edited extends PullRequestEventType
 
-    implicit val decoder = new Decoder[PullRequestEventType]{
+    implicit val decoder: Decoder[PullRequestEventType] = new Decoder[PullRequestEventType]{
       def apply(c: HCursor): Decoder.Result[PullRequestEventType] =
         c.as[String].flatMap{
           case "opened" => Opened.asRight
@@ -328,7 +328,7 @@ object PullRequests {
     sender: Users.SimpleUser
   )
   object PullRequestEvent {
-    implicit val decoder = new Decoder[PullRequestEvent]{
+    implicit val decoder: Decoder[PullRequestEvent] = new Decoder[PullRequestEvent]{
       def apply(c: HCursor): Decoder.Result[PullRequestEvent] =
         (
           c.downField("action").as[PullRequestEventType],

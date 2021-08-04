@@ -17,7 +17,7 @@ object Repositories {
     repo: String
   )
   object RepoRef {
-    implicit val repoRefDecoder=  new Decoder[RepoRef]{
+    implicit val repoRefDecoder: Decoder[RepoRef] =  new Decoder[RepoRef]{
       def apply(c: HCursor): Decoder.Result[RepoRef] =
         (
           c.downField("owner").as[Users.SimpleOwner],
@@ -58,7 +58,7 @@ object Repositories {
     source: Option[RepoRef]
   )
   object Repo {
-    implicit val repoDecoder =new Decoder[Repo]{
+    implicit val repoDecoder: Decoder[Repo] =new Decoder[Repo]{
       def apply(c: HCursor): Decoder.Result[Repo] =
         ((
           c.downField("name").as[String],
@@ -145,7 +145,7 @@ object Repositories {
   object NewRepo {
     def create(name: String): NewRepo = NewRepo(name, None, None, None, None, None, None)
 
-    implicit val newRepoEncoder = new Encoder[NewRepo]{
+    implicit val newRepoEncoder: Encoder[NewRepo] = new Encoder[NewRepo]{
       def apply(a: NewRepo): Json = Json.obj(
         "name" -> a.name.asJson,
         "description" -> a.description.asJson,
@@ -169,7 +169,7 @@ object Repositories {
   )
   object EditRepo {
 
-    implicit val editRepoEncoder = new Encoder[EditRepo]{
+    implicit val editRepoEncoder: Encoder[EditRepo] = new Encoder[EditRepo]{
       def apply(a: EditRepo): Json = Json.obj(
         "name" -> a.name.asJson,
         "description" -> a.description.asJson,
@@ -184,11 +184,11 @@ object Repositories {
 
   sealed trait RepoPublicity
   object RepoPublicity {
-    final case object All extends RepoPublicity
-    final case object Owner extends RepoPublicity
-    final case object Public extends RepoPublicity
-    final case object Private extends RepoPublicity
-    final case object Member extends RepoPublicity
+    case object All extends RepoPublicity
+    case object Owner extends RepoPublicity
+    case object Public extends RepoPublicity
+    case object Private extends RepoPublicity
+    case object Member extends RepoPublicity
   }
 
   sealed trait Contributor
@@ -229,7 +229,7 @@ object Repositories {
       commentCount: Int
   )
   object MergeCommit {
-    implicit val mergeCommitDecoder = new Decoder[MergeCommit] {
+    implicit val mergeCommitDecoder: Decoder[MergeCommit] = new Decoder[MergeCommit] {
       def apply(c: HCursor): Decoder.Result[MergeCommit] =
         (
           c.downField("author").as[GitData.GitUser],
@@ -254,7 +254,7 @@ object Repositories {
       parents: List[GitData.CommitTree]
   )
   object MergeResult {
-    implicit val mergeResultDecoder = new Decoder[MergeResult] {
+    implicit val mergeResultDecoder: Decoder[MergeResult] = new Decoder[MergeResult] {
       def apply(c: HCursor): Decoder.Result[MergeResult] =
         (
           c.downField("sha").as[String],

@@ -13,7 +13,7 @@ object GitData {
     case object Base64 extends Encoding
     case object Utf8 extends Encoding
 
-    implicit val encoder = new Encoder[Encoding]{
+    implicit val encoder: Encoder[Encoding] = new Encoder[Encoding]{
       def apply(a: Encoding): Json = a match {
         case Base64 => "base64".asJson
         case Utf8 => "utf-8".asJson
@@ -28,7 +28,7 @@ object GitData {
     size: Int
   )
   object Blob {
-    implicit val decoder = new Decoder[Blob]{
+    implicit val decoder: Decoder[Blob] = new Decoder[Blob]{
       def apply(c: HCursor): Decoder.Result[Blob] =
         (
           c.downField("content").as[String],
@@ -45,7 +45,7 @@ object GitData {
   )
 
   object CreateBlob {
-    implicit val encoder = new Encoder[CreateBlob]{
+    implicit val encoder: Encoder[CreateBlob] = new Encoder[CreateBlob]{
       def apply(a: CreateBlob): Json = Json.obj(
         "content" -> a.content.asJson,
         "encoding" -> a.encoding.asJson
@@ -58,7 +58,7 @@ object GitData {
     sha: String
   )
   object NewBlob {
-    implicit val decoder = new Decoder[NewBlob]{
+    implicit val decoder: Decoder[NewBlob] = new Decoder[NewBlob]{
       def apply(c: HCursor): Decoder.Result[NewBlob] =
         (
           c.downField("url").as[Uri],
@@ -74,7 +74,7 @@ object GitData {
     case object Commit extends GitObjectType
     case object Tree extends GitObjectType
 
-    implicit val decoder = new Decoder[GitObjectType]{
+    implicit val decoder: Decoder[GitObjectType] = new Decoder[GitObjectType]{
       def apply(c: HCursor): Decoder.Result[GitObjectType] =
         c.as[String].flatMap{
           case "blob" => Right(Blob)
@@ -84,7 +84,7 @@ object GitData {
         }
     }
 
-    implicit val encoder = new Encoder[GitObjectType]{
+    implicit val encoder: Encoder[GitObjectType] = new Encoder[GitObjectType]{
       def apply(a: GitObjectType): Json = a match {
         case Blob => Json.fromString("blob")
         case Commit => Json.fromString("commit")
@@ -102,7 +102,7 @@ object GitData {
     case object Submodule extends GitMode
     case object Symlink extends GitMode
 
-    implicit val decoder = new Decoder[GitMode]{
+    implicit val decoder: Decoder[GitMode] = new Decoder[GitMode]{
       def apply(c: HCursor): Decoder.Result[GitMode] = c.as[String].flatMap{
         case "100755" => Right(Executable)
         case "100644" => Right(File)
@@ -113,7 +113,7 @@ object GitData {
       }
     }
 
-    implicit val encoder = new Encoder[GitMode]{
+    implicit val encoder: Encoder[GitMode] = new Encoder[GitMode]{
       def apply(a: GitMode): Json = a match {
         case Executable => Json.fromString("100755")
         case File => Json.fromString("100644")
@@ -134,7 +134,7 @@ object GitData {
     size: Option[Int],
   )
   object GitTree {
-    implicit val decoder = new Decoder[GitTree]{
+    implicit val decoder: Decoder[GitTree] = new Decoder[GitTree]{
       def apply(c: HCursor): Decoder.Result[GitTree] =
         (
           c.downField("path").as[String],
@@ -154,7 +154,7 @@ object GitData {
     truncated: Option[Boolean]
   )
   object Tree {
-    implicit val decoder = new Decoder[Tree]{
+    implicit val decoder: Decoder[Tree] = new Decoder[Tree]{
       def apply(c: HCursor): Decoder.Result[Tree] =
         (
           c.downField("sha").as[String],
@@ -191,7 +191,7 @@ object GitData {
       mode: Either[GitMode.Executable.type, GitMode.File.type],
     ) extends CreateGitTree
 
-    implicit val encoder = new Encoder[CreateGitTree]{
+    implicit val encoder: Encoder[CreateGitTree] = new Encoder[CreateGitTree]{
       def apply(a: CreateGitTree): Json = a match {
         case CreateGitTreeSha(path, sha, typ, mode) =>
           Json.obj(
@@ -234,7 +234,7 @@ object GitData {
     baseTreeSha: Option[String],
   )
   object CreateTree {
-    implicit val encoder = new Encoder[CreateTree]{
+    implicit val encoder: Encoder[CreateTree] = new Encoder[CreateTree]{
       def apply(a: CreateTree): Json =
         Json.obj(
           "tree" -> a.tree.asJson,
@@ -250,7 +250,7 @@ object GitData {
     date: ZonedDateTime
   )
   object GitUser {
-    implicit val decoder = new Decoder[GitUser]{
+    implicit val decoder: Decoder[GitUser] = new Decoder[GitUser]{
       def apply(c: HCursor): Decoder.Result[GitUser] =
         (
           c.downField("name").as[String],
@@ -258,7 +258,7 @@ object GitData {
           c.downField("date").as[ZonedDateTime]
         ).mapN(GitUser.apply)
     }
-    implicit val encoder = new Encoder[GitUser]{
+    implicit val encoder: Encoder[GitUser] = new Encoder[GitUser]{
       def apply(a: GitUser): Json = Json.obj(
         "name" -> a.name.asJson,
         "email" -> a.email.asJson,
@@ -273,7 +273,7 @@ object GitData {
   )
 
   object CommitTree {
-    implicit val decoder = new Decoder[CommitTree]{
+    implicit val decoder: Decoder[CommitTree] = new Decoder[CommitTree]{
       def apply(c: HCursor): Decoder.Result[CommitTree] =
         (
           c.downField("sha").as[String],
@@ -292,7 +292,7 @@ object GitData {
     parents: List[CommitTree]
   )
   object GitCommit {
-    implicit val decoder = new Decoder[GitCommit]{
+    implicit val decoder: Decoder[GitCommit] = new Decoder[GitCommit]{
       def apply(c: HCursor): Decoder.Result[GitCommit] =
         (
           c.downField("message").as[String],
@@ -318,7 +318,7 @@ object GitData {
     def simple(message: String, treeSha: String, parents: List[String]): CreateCommit =
       CreateCommit(message, treeSha, parents, None, None, None)
 
-    implicit val encoder = new Encoder[CreateCommit]{
+    implicit val encoder: Encoder[CreateCommit] = new Encoder[CreateCommit]{
       def apply(a: CreateCommit): Json = Json.obj(
         "message" -> a.message.asJson,
         "tree" -> a.treeSha.asJson,
@@ -336,7 +336,7 @@ object GitData {
     uri: Uri
   )
   object GitObject {
-    implicit val decoder = new Decoder[GitObject]{
+    implicit val decoder: Decoder[GitObject] = new Decoder[GitObject]{
       def apply(c: HCursor): Decoder.Result[GitObject] =
         (
           c.downField("type").as[GitObjectType],
@@ -352,7 +352,7 @@ object GitData {
     `object`: GitObject
   )
   object GitReference{
-    implicit val decoder = new Decoder[GitReference]{
+    implicit val decoder: Decoder[GitReference] = new Decoder[GitReference]{
       def apply(c: HCursor): Decoder.Result[GitReference] =
         (
           c.downField("ref").as[String],
@@ -367,7 +367,7 @@ object GitData {
     sha: String
   )
   object CreateReference {
-    implicit val encoder = new Encoder[CreateReference]{
+    implicit val encoder: Encoder[CreateReference] = new Encoder[CreateReference]{
       def apply(a: CreateReference): Json = Json.obj(
         "ref" -> a.ref.asJson,
         "sha" -> a.sha.asJson
@@ -380,7 +380,7 @@ object GitData {
     force: Boolean
   )
   object UpdateReference {
-    implicit val encoder = new Encoder[UpdateReference]{
+    implicit val encoder: Encoder[UpdateReference] = new Encoder[UpdateReference]{
       def apply(a: UpdateReference): Json = Json.obj(
         "sha" -> a.sha.asJson,
         "force" -> a.force.asJson
@@ -397,7 +397,7 @@ object GitData {
     `object`: GitObject
   )
   object GitTag {
-    implicit val decoder = new Decoder[GitTag]{
+    implicit val decoder: Decoder[GitTag] = new Decoder[GitTag]{
       def apply(c: HCursor): Decoder.Result[GitTag] =
         (
           c.downField("tag").as[String],
@@ -418,7 +418,7 @@ object GitData {
     tagger: Option[GitUser]
   )
   object CreateTag {
-    implicit val encoder = new Encoder[CreateTag]{
+    implicit val encoder: Encoder[CreateTag] = new Encoder[CreateTag]{
       def apply(a: CreateTag): Json = Json.obj(
         "tag" -> a.tag.asJson,
         "message" -> a.message.asJson,
@@ -428,11 +428,6 @@ object GitData {
       ).dropNullValues
     }
   }
-
-
-
-
-
 
 
 
