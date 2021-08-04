@@ -5,7 +5,7 @@ import cats.data._
 import cats.effect._
 import io.chrisdavenport.github.data.Repositories._
 import org.http4s._
-import org.http4s.implicits._
+import org.http4s.syntax.all._
 import org.http4s.client.Client
 
 import io.chrisdavenport.github.Auth
@@ -49,7 +49,7 @@ object Repositories {
     RequestConstructor.runRequestWithBody[F, NewRepo, Repo](
       auth.some,
       Method.POST,
-      uri"orgs" / org / "repos",
+      Uri.unsafeFromString("orgs") / org / "repos",
       newRepo
     )
   }

@@ -5,7 +5,7 @@ import cats.effect.testing.specs2.CatsEffect
 
 import io.chrisdavenport.github.OAuth
 
-import io.circe.literal._
+import io.circe.parser._
 
 import org.http4s._
 import org.http4s.client._
@@ -19,7 +19,7 @@ class ForksSpec extends Specification with CatsEffect {
   "Forks endpoints" should {
     val routes = HttpRoutes.of[IO]{
       case POST -> Root / "repos" / _ / _ / "forks" =>
-        val json = json"""
+        val json = parse("""
         {
           "id": 1296269,
           "node_id": "MDEwOlJlcG9zaXRvcnkxMjk2MjY5",
@@ -127,11 +127,11 @@ class ForksSpec extends Specification with CatsEffect {
           "allow_merge_commit": true,
           "subscribers_count": 42,
           "network_count": 0
-        }"""
+        }""").toOption.get
         Accepted(json)
 
       case GET -> Root / "repos" / _ / _ / "forks" =>
-        val json = json"""
+        val json = io.circe.parser.parse("""
         [
           {
             "id": 1296269,
@@ -247,7 +247,7 @@ class ForksSpec extends Specification with CatsEffect {
               "node_id": "MDc6TGljZW5zZW1pdA=="
             }
           }
-        ]"""
+        ]""").toOption.get
         Accepted(json)
     }
     "fork a repository" in {

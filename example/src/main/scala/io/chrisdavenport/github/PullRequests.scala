@@ -1,7 +1,7 @@
 package io.chrisdavenport.github
-import cats.implicits._
+
 import cats.effect._
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.client.BlazeClientBuilder
 import io.chrisdavenport.github.endpoints.PullRequests
 
 

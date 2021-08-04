@@ -1,44 +1,44 @@
 package io.chrisdavenport.github.internals
 
 import cats._
-import cats.effect._
+import cats.effect.{MonadThrow => _, _}
 import cats.implicits._
 import fs2._
-import org.http4s._
 import org.http4s.implicits._
 import org.http4s.client.Client
 import org.http4s.headers.Authorization
 import _root_.io.chrisdavenport.github._
 import cats.data.Kleisli
 import org.http4s._
+import org.typelevel.ci._
 
 import scala.util.matching.Regex
 
 
 object RequestConstructor {
 
-  def runRequestWithNoBody[F[_]: Sync, B: EntityDecoder[F, ?]]
+  def runRequestWithNoBody[F[_]: Sync, B]
   (
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
-  ): Kleisli[F, Client[F], B] =
+  )(implicit B: EntityDecoder[F, B]): Kleisli[F, Client[F], B] =
     runRequest[F, Unit, B](auth, method, extendedUri, None)
 
-  def runRequestWithBody[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
+  def runRequestWithBody[F[_]: Sync, A, B](
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
     body: A
-  ): Kleisli[F, Client[F], B] =
+  )(implicit A: EntityEncoder[F, A], B: EntityDecoder[F, B]): Kleisli[F, Client[F], B] =
     runRequest[F, A, B](auth, method, extendedUri, body.some)
 
-  def runRequest[F[_]: Sync, A: EntityEncoder[F, ?], B: EntityDecoder[F, ?]](
+  def runRequest[F[_]: Sync, A, B](
     auth: Option[Auth],
     method: Method,
     extendedUri: Uri,
     body: Option[A]
-  ):  Kleisli[F, Client[F], B] = Kleisli{ c =>
+  )(implicit A: EntityEncoder[F, A], B: EntityDecoder[F, B]):  Kleisli[F, Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
     val baseReq = Request[F](method = method, uri = uri)
       .withHeaders(extraHeaders)
@@ -46,7 +46,7 @@ object RequestConstructor {
     val req = body.fold(req2)(a => req2.withEntity(a))
     c.expectOr[B](req)(resp => 
       
-      resp.bodyAsText.compile.string.flatMap(body => 
+      resp.bodyText.compile.string.flatMap(body => 
         Sync[F].raiseError(new GithubError(resp.status, body))
       )
     )
@@ -66,9 +66,9 @@ object RequestConstructor {
 
   private val RE_LINK: Regex = "[\\s]*<(.*)>; rel=\"(.*)\"".r
 
-  private def getNextUri[F[_]: MonadError[*[_], Throwable]](r: Response[F]): Option[Uri] = {
-    r.headers.toList.flatMap {
-      case Header(name, value) if name == "Link".ci => value.split(",").toList
+  private def getNextUri[F[_]: MonadThrow](r: Response[F]): Option[Uri] = {
+    r.headers.headers.flatMap {
+      case Header.Raw(name, value) if name == CIString("Link") => value.split(",").toList
       case _ => Nil
     }.collectFirstSome {
       case RE_LINK(uri, "next") => Uri.fromString(uri).toOption
@@ -76,22 +76,22 @@ object RequestConstructor {
     }
   } 
 
-  def runPaginatedRequest[F[_]: Sync, B: EntityDecoder[F, ?]](
+  def runPaginatedRequest[F[_]: Sync, B](
     auth: Option[Auth],
     extendedUri: Uri,
-  ):  Kleisli[Stream[F, ?], Client[F], B] = Kleisli{ c =>
+  )(implicit E: EntityDecoder[F, B]):  Kleisli[({ type S[A] = Stream[F, A]})#S, Client[F], B] = Kleisli{ c =>
     val uri = Uri.resolve(baseUrl(auth), extendedUri)
     unfoldLoopEval(uri){ uri =>
       val baseReq = Request[F](method = Method.GET, uri = uri)
         .withHeaders(extraHeaders)
       val req = auth.fold(baseReq)(setAuth(_)(baseReq))
-      c.fetch(req) { resp =>
+      c.run(req).use{ resp =>
         if(resp.status.isSuccess)
           resp.as[B].map {
             (_, getNextUri(resp))
           }
         else
-          resp.bodyAsText.compile.string.flatMap(body => 
+          resp.bodyText.compile.string.flatMap(body => 
             Sync[F].raiseError[(B, Option[Uri])](new GithubError(resp.status, body))
           )
       }
@@ -130,9 +130,9 @@ object RequestConstructor {
       req.withHeaders(Authorization(Credentials.Token(AuthScheme.Bearer, token)))
   }
 
-  private val extraHeaders: Headers = Headers.of(
-    Header("User-Agent", "github.scala/" ++ _root_.io.chrisdavenport.github.BuildInfo.version),
-    Header("Accept", "application/vnd.github.v3+json")
+  private val extraHeaders: Headers = Headers(
+    ("User-Agent", "github.scala/" ++ _root_.io.chrisdavenport.github.BuildInfo.version),
+    ("Accept", "application/vnd.github.v3+json")
   )
 
 }

@@ -11,8 +11,8 @@ object GithubMedia extends CirceEntityDecoder {
 
     new EntityEncoder[F, A]{
       def headers: Headers = 
-        Headers.of(
-          Header("Accept", "application/vnd.github.v3+json")
+        Headers(
+          ("Accept", "application/vnd.github.v3+json")
         ) ++ json.headers
       def toEntity(a: A): Entity[F] = json.toEntity(a)
     }

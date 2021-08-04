@@ -3,7 +3,7 @@ package io.chrisdavenport.github.endpoints
 import cats.effect._
 import cats.effect.testing.specs2.CatsEffect
 
-import io.circe.literal._
+import io.circe.parser._
 
 import io.chrisdavenport.github.OAuth
 
@@ -20,7 +20,7 @@ class UsersSpec extends Specification with CatsEffect {
   "Users" should {
   val getSingleUser : HttpRoutes[IO] = HttpRoutes.of {
     case GET -> Root / "users" / _ /*username*/ =>
-      val json = json"""
+      val json = parse("""
       {
   "login": "octocat",
   "id": 1,
@@ -54,7 +54,7 @@ class UsersSpec extends Specification with CatsEffect {
   "created_at": "2008-01-14T04:33:35Z",
   "updated_at": "2008-01-14T04:33:35Z"
 }
-      """
+      """).toOption.get
       Ok(json)
   }
 
@@ -67,7 +67,7 @@ class UsersSpec extends Specification with CatsEffect {
 
       val getAuthenticatedUser = HttpRoutes.of[IO]{
     case GET -> Root / "user" =>
-      val json = json"""
+      val json = parse("""
 {
   "login": "octocat",
   "id": 1,
@@ -113,7 +113,7 @@ class UsersSpec extends Specification with CatsEffect {
     "collaborators": 0
   }
 }
-"""
+""").toOption.get
     Ok(json)
   }
 
@@ -126,7 +126,7 @@ class UsersSpec extends Specification with CatsEffect {
 
   val updateAuthenticatedUser = HttpRoutes.of[IO]{
     case PATCH -> Root / "user" =>
-      val json = json"""
+      val json = parse("""
 {
   "login": "octocat",
   "id": 1,
@@ -171,7 +171,7 @@ class UsersSpec extends Specification with CatsEffect {
     "private_repos": 20,
     "collaborators": 0
   }
-}"""
+}""").toOption.get
   Ok(json)
   }
 
@@ -186,7 +186,7 @@ class UsersSpec extends Specification with CatsEffect {
 
   val getAllUsers = HttpRoutes.of[IO]{
     case GET -> Root / "users" =>
-      val json = json"""
+      val json = parse("""
       [
   {
     "login": "octocat",
@@ -208,7 +208,7 @@ class UsersSpec extends Specification with CatsEffect {
     "type": "User",
     "site_admin": false
   }
-]"""
+]""").toOption.get
     Ok(json)
 
   }

@@ -3,7 +3,7 @@ package io.chrisdavenport.github.endpoints.repositories
 import cats.effect._
 import cats.effect.testing.specs2.CatsEffect
 
-import io.circe.literal._
+import io.circe.parser._
 
 import org.http4s._
 import org.http4s.client._
@@ -17,7 +17,7 @@ class ContentSpec extends Specification with CatsEffect {
   "Content endpoints" should {
     val getContent = HttpRoutes.of[IO]{
       case GET -> Root / "repos" / _ / _ / "contents" / "file" =>
-        val json = json"""
+        val json = parse("""
 {
   "type": "file",
   "encoding": "base64",
@@ -36,10 +36,10 @@ class ContentSpec extends Specification with CatsEffect {
     "html": "https://github.com/octokit/octokit.rb/blob/master/README.md"
   }
 }
-        """
+        """).toOption.get
         Ok(json)
       case GET -> Root / "repos" / _ / _ / "contents" / "directory" =>
-        val json = json"""
+        val json = parse("""
         [
   {
     "type": "file",
@@ -74,7 +74,7 @@ class ContentSpec extends Specification with CatsEffect {
     }
   }
 ]
-        """
+        """).toOption.get
         Ok(json)
     }
     "get content correct if given a file" in {

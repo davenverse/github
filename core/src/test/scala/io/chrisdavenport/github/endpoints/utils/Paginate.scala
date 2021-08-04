@@ -1,7 +1,8 @@
 package io.chrisdavenport.github.endpoints.utils
 
 import org.http4s.{Header, Uri}
-import cats.implicits._
+import cats.syntax.all._
+import org.typelevel.ci._
 
 /**
  * Can be mixed-in to simulate pagination in tests
@@ -14,10 +15,10 @@ trait Paginate {
    * @param numPages The number of pages
    * @return A map, containing the "Link" header for each page point to prev, next, first and last page
    */
-  def paginate(uri: Uri, numPages: Int): Map[Int, Header] = {
+  def paginate(uri: Uri, numPages: Int): Map[Int, Header.Raw] = {
     (1 to numPages).map { currentPage =>
-      currentPage -> Header(
-        "Link",
+      currentPage -> Header.Raw(
+        CIString("Link"),
         List(
           prevPage(uri, currentPage),
           nextPage(uri, numPages, currentPage),
@@ -27,7 +28,7 @@ trait Paginate {
           .flatten
           .map { case (uri, rel) =>
             s""" <${uri.toString}>; rel="$rel""""
-          }. mkString(",")
+          }.mkString(",")
       )
     }.toMap
   }

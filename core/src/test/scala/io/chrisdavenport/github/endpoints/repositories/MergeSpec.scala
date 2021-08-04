@@ -3,8 +3,6 @@ package io.chrisdavenport.github.endpoints.repositories
 import cats.effect._
 import cats.effect.testing.specs2.CatsEffect
 
-import io.circe.literal._
-
 import io.chrisdavenport.github.data.Repositories._
 import io.chrisdavenport.github.OAuth
 
@@ -20,7 +18,7 @@ class MergeSpec extends Specification with CatsEffect {
   "Repository > Merge endpoints" should {
     val routes = HttpRoutes.of[IO] {
       case POST -> Root / "repos" / _ / _ / "merges" =>
-        val json = json"""
+        val json = _root_.io.circe.parser.parse("""
           {
             "sha": "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
             "node_id": "MDY6Q29tbWl0N2ZkMWE2MGIwMWY5MWIzMTRmNTk5NTVhNGU0ZDRlODBkOGVkZjExZA==",
@@ -103,7 +101,7 @@ class MergeSpec extends Specification with CatsEffect {
               }
             ]
           }
-          """
+          """).toOption.get
           Created(json)
       }
       "perform a merge" in {

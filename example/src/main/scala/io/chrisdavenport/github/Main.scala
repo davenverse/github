@@ -5,9 +5,9 @@ import cats.effect._
 import cats.data.Kleisli
 
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.client.BlazeClientBuilder
 import scala.concurrent.duration._
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import scodec.bits._
 
 object Main extends IOApp {
@@ -16,13 +16,13 @@ object Main extends IOApp {
     val logger = Slf4jLogger.getLogger[IO]
     for {
       c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
-      home <- Resource.liftF(IO(sys.env("HOME")))
+      home <- Resource.eval(IO(sys.env("HOME")))
         .map(_.trim())
-      authLine <- Resource.liftF(IO(scala.io.Source.fromFile(home |+| "/Documents/.token_test").getLines.toList.head))
+      authLine <- Resource.eval(IO(scala.io.Source.fromFile(home |+| "/Documents/.token_test").getLines().toList.head))
 
       auth = OAuth(authLine)
 
-      _ <- Resource.liftF{
+      _ <- Resource.eval{
         import data.Content.CreateFile
         import data.Repositories.NewRepo
         import data.GitData._
@@ -170,5 +170,5 @@ object Main extends IOApp {
   )
 
   def liftPrint[A](io: IO[A]): Resource[IO, A] = 
-    Resource.liftF(io).evalTap(a => IO(println(a)))
+    Resource.eval(io).evalTap(a => IO(println(a)))
 }
