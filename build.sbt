@@ -11,7 +11,7 @@ val catsEffectTestingV = "1.2.0"
 val log4catsV = "2.1.1"
 val logbackClassicV = "1.2.3"
 
-val specs2V = "4.12.3"
+val specs2V = "4.12.10"
 
 
 lazy val `github` = project.in(file("."))
