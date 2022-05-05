@@ -8,7 +8,7 @@ val fs2V = "3.2.7"
 val http4sV = "0.23.0"
 val circeV = "0.14.1"
 val catsEffectTestingV = "1.4.0"
-val log4catsV = "2.3.0"
+val log4catsV = "2.3.1"
 val logbackClassicV = "1.2.11"
 
 val specs2V = "4.12.3"
