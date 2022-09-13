@@ -184,6 +184,7 @@ object Repositories {
         "has_issues" -> a.hasIssues.asJson,
         "has_wiki" -> a.hasWiki.asJson,
         "has_downloads" -> a.hasDownloads.asJson
+        "visibility" -> a.visibility.asJson
       ).dropNullValues
     }
   }
