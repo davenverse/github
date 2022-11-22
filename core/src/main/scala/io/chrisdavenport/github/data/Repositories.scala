@@ -55,7 +55,8 @@ object Repositories {
     hasIssues: Option[Boolean],
     hasDownloads: Option[Boolean],
     parent: Option[RepoRef],
-    source: Option[RepoRef]
+    source: Option[RepoRef],
+    visibility: Option[String] // "public", "private" or "internal" (internal is only available if using GitHub Enterprise)
   )
   object Repo {
     implicit val repoDecoder: Decoder[Repo] =new Decoder[Repo]{
@@ -91,7 +92,8 @@ object Repositories {
           c.downField("has_issues").as[Option[Boolean]],
           c.downField("has_downloads").as[Option[Boolean]],
           c.downField("parent").as[Option[RepoRef]],
-          c.downField("source").as[Option[RepoRef]]
+          c.downField("source").as[Option[RepoRef]],
+          c.downField("visibility").as[Option[String]]
         ).mapN{
           case (
             (
@@ -124,11 +126,12 @@ object Repositories {
             hasIssues,
             hasDownloads,
             parent,
-            origin
+            origin,
+            visibility
             ) => Repo(name, id, uri, htmlUri, isPrivate, isArchived, owner, hooksUri,
             stargazersCount, description, sshUri, gitUri, cloneUri, svnUri, forks, homepage,
             canFork, size, updatedAt, watchers, language, defaultBranch, pushedAt,
-            openIssues, hasWiki, hasIssues, hasDownloads, parent, origin)
+            openIssues, hasWiki, hasIssues, hasDownloads, parent, origin, visibility)
         }
     }
   }
@@ -140,10 +143,11 @@ object Repositories {
     isPublic: Option[Boolean],
     hasIssues: Option[Boolean],
     hasWiki: Option[Boolean],
-    autoInit: Option[Boolean]
+    autoInit: Option[Boolean],
+    visibility: Option[String] // "public", "private" or "internal" (internal is only available if using GitHub Enterprise)
   )
   object NewRepo {
-    def create(name: String): NewRepo = NewRepo(name, None, None, None, None, None, None)
+    def create(name: String): NewRepo = NewRepo(name, None, None, None, None, None, None, None)
 
     implicit val newRepoEncoder: Encoder[NewRepo] = new Encoder[NewRepo]{
       def apply(a: NewRepo): Json = Json.obj(
@@ -153,7 +157,8 @@ object Repositories {
         "public" -> a.isPublic.asJson,
         "has_issues" -> a.hasIssues.asJson,
         "has_wiki" -> a.hasWiki.asJson,
-        "auto_init" -> a.autoInit.asJson
+        "auto_init" -> a.autoInit.asJson,
+        "visibility" -> a.visibility.asJson
       ).dropNullValues
     }
   }
@@ -165,7 +170,8 @@ object Repositories {
     isPublic: Option[Boolean],
     hasIssues: Option[Boolean],
     hasWiki: Option[Boolean],
-    hasDownloads: Option[Boolean]
+    hasDownloads: Option[Boolean],
+    visibility: Option[String] // "public", "private" or "internal" (internal is only available if using GitHub Enterprise)
   )
   object EditRepo {
 
@@ -178,6 +184,7 @@ object Repositories {
         "has_issues" -> a.hasIssues.asJson,
         "has_wiki" -> a.hasWiki.asJson,
         "has_downloads" -> a.hasDownloads.asJson
+        "visibility" -> a.visibility.asJson
       ).dropNullValues
     }
   }
