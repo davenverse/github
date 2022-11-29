@@ -1,7 +1,7 @@
 package io.chrisdavenport.github
 
 import cats.effect._
-import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.ember.client.EmberClientBuilder
 import io.chrisdavenport.github.endpoints.PullRequests
 
 
@@ -9,7 +9,7 @@ object PullRequestsExample extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
     for {
-      c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
+      c <- EmberClientBuilder.default[IO].build
       out <-
           PullRequests.pullRequestsFor[IO](
             "ChristopherDavenport",

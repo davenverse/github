@@ -262,7 +262,7 @@ class ForksSpec extends Specification with CatsEffect {
         .run(Client.fromHttpApp(routes.orNotFound))
         .compile
         .last
-        .map { _ must not beEmpty }
+        .map { _ must not(beNone) }
     }
   }
 }

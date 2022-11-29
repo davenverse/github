@@ -1,22 +1,29 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+ThisBuild / tlBaseVersion := "0.4"
 
-ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.6", "3.1.2")
+ThisBuild / organization := "io.chrisdavenport"
+ThisBuild / organizationName := "Christopher Davenport"
+ThisBuild / licenses := Seq(License.MIT)
+ThisBuild / developers := List(
+  // your GitHub handle and name
+  tlGitHubDev("christopherdavenport", "Christopher Davenport")
+)
 
-val catsV = "2.7.0"
-val catsEffectV = "3.3.12"
-val fs2V = "3.2.7"
-val http4sV = "0.23.0"
-val circeV = "0.14.2"
-val catsEffectTestingV = "1.4.0"
-val log4catsV = "2.3.1"
+ThisBuild / tlCiReleaseBranches := Seq("main")
+
+ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.2.1")
+
+val catsV = "2.8.0"
+val catsEffectV = "3.4.2"
+val fs2V = "3.4.0"
+val http4sV = "0.23.16"
+val circeV = "0.14.3"
+val catsEffectTestingV = "1.5.0"
+val log4catsV = "2.5.0"
 val logbackClassicV = "1.2.11"
 
-val specs2V = "4.12.3"
-
-
-lazy val `github` = project.in(file("."))
-  .disablePlugins(MimaPlugin)
-  .enablePlugins(NoPublishPlugin)
+lazy val `github` = tlCrossRootProject
   .aggregate(core, example)
 
 lazy val core = project.in(file("core"))
@@ -24,14 +31,6 @@ lazy val core = project.in(file("core"))
   .settings(
     name := "github",
     scalacOptions -= "-Xfatal-warnings",
-    scalacOptions ++= {
-      if (isDotty.value) Seq("-language:postfixOps")
-      else Seq()
-    },
-    mimaVersionCheckExcludedVersions := {
-      if (isDotty.value) Set("0.3.0")
-      else Set()
-    },
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := "io.chrisdavenport.github",
     libraryDependencies ++= Seq(
@@ -47,9 +46,7 @@ lazy val core = project.in(file("core"))
       "io.circe"                    %% "circe-core"                 % circeV,
       // "io.circe"                    %% "circe-literal"              % circeV      % Test,
       "io.circe"                    %% "circe-parser"               % circeV      % Test,
-      
-      ("org.specs2"                  %% "specs2-core"                % specs2V       % Test).cross(CrossVersion.for3Use2_13),
-      ("org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test).cross(CrossVersion.for3Use2_13),
+
       "org.typelevel"              %% "cats-effect-testing-specs2" % catsEffectTestingV  % Test
     )
   )
@@ -61,16 +58,12 @@ lazy val example = project.in(file("example"))
   .settings(
     libraryDependencies ++= Seq(
       // For Testing As I go
-    "org.http4s"                  %% "http4s-blaze-client"        % http4sV,
+    "org.http4s"                  %% "http4s-ember-client"        % http4sV,
     "org.typelevel"           %% "log4cats-slf4j"             % log4catsV,
     "ch.qos.logback"              % "logback-classic"               % logbackClassicV,
     )
   )
 
 lazy val site = project.in(file("site"))
-  .disablePlugins(MimaPlugin)
-  .enablePlugins(NoPublishPlugin)
-  .enablePlugins(DavenverseMicrositePlugin)
-  .settings(
-    micrositeDescription := "Github Integration for Scala",
-  )
+  .enablePlugins(TypelevelSitePlugin)
+  .dependsOn(core)
