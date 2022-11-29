@@ -5,7 +5,7 @@ import cats.effect._
 import cats.data.Kleisli
 
 import org.http4s.client.Client
-import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.ember.client.EmberClientBuilder
 import scala.concurrent.duration._
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import scodec.bits._
@@ -15,7 +15,7 @@ object Main extends IOApp {
   def run(args: List[String]): IO[ExitCode] = {
     val logger = Slf4jLogger.getLogger[IO]
     for {
-      c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
+      c <- EmberClientBuilder.default[IO].build
       home <- Resource.eval(IO(sys.env("HOME")))
         .map(_.trim())
       authLine <- Resource.eval(IO(scala.io.Source.fromFile(home |+| "/Documents/.token_test").getLines().toList.head))

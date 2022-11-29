@@ -59,15 +59,15 @@ class GistsSpec extends Specification with CatsEffect with JsonFiles {
         .take(1)
         .compile
         .toList
-        .map(_ must not beEmpty)
+        .map(_ must not(beEmpty))
     }
 
     "list all public gists" in {
-      Gists.allPublic[IO](None, None).run(client).take(1).compile.toList.map(_ must not beEmpty)
+      Gists.allPublic[IO](None, None).run(client).take(1).compile.toList.map(_ must not(beEmpty))
     }
 
     "list starred gists" in {
-      Gists.starred[IO](None, OAuth("")).run(client).take(1).compile.toList.map(_ must not beEmpty)
+      Gists.starred[IO](None, OAuth("")).run(client).take(1).compile.toList.map(_ must not(beEmpty))
     }
 
     "get a single gist" in {

@@ -2,14 +2,14 @@ package io.chrisdavenport.github
 
 // import cats.implicits._
 import cats.effect._
-import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.ember.client.EmberClientBuilder
 import java.{util => ju}
 import endpoints.repositories.Content
 object GetFileContent extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = {
     for {
-      c <- BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global).resource
+      c <- EmberClientBuilder.default[IO].build
       out <- Resource.eval(
           Content.contentsFor[IO](
             "ChristopherDavenport",
