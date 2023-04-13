@@ -12,7 +12,7 @@ ThisBuild / tlCiReleaseBranches := Seq("main")
 
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / versionScheme := Some("early-semver")
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.2.1")
+ThisBuild / crossScalaVersions := Seq("2.12.17", "2.13.8", "3.2.1")
 
 val catsV = "2.8.0"
 val catsEffectV = "3.4.2"
