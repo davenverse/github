@@ -20,7 +20,7 @@ val fs2V = "3.4.0"
 val http4sV = "0.23.16"
 val circeV = "0.14.3"
 val catsEffectTestingV = "1.5.0"
-val log4catsV = "2.5.0"
+val log4catsV = "2.6.0"
 val logbackClassicV = "1.2.11"
 
 lazy val `github` = tlCrossRootProject
