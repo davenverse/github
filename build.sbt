@@ -1,4 +1,4 @@
-ThisBuild / tlBaseVersion := "0.4"
+ThisBuild / tlBaseVersion := "0.5"
 
 ThisBuild / organization := "io.chrisdavenport"
 ThisBuild / organizationName := "Christopher Davenport"
@@ -12,15 +12,15 @@ ThisBuild / tlCiReleaseBranches := Seq()
 
 ThisBuild / scalaVersion := "2.13.18"
 ThisBuild / versionScheme := Some("early-semver")
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.18", "3.3.8")
+ThisBuild / crossScalaVersions := Seq("2.13.18", "3.3.8")
 
-val catsV = "2.8.0"
-val catsEffectV = "3.4.2"
-val fs2V = "3.4.0"
-val http4sV = "0.23.16"
+val catsV = "2.13.0"
+val catsEffectV = "3.7.1"
+val fs2V = "3.14.0"
+val http4sV = "0.23.37"
 val circeV = "0.14.3"
 val catsEffectTestingV = "1.5.0"
-val log4catsV = "2.5.0"
+val log4catsV = "2.8.0"
 val logbackClassicV = "1.2.11"
 
 lazy val `github` = tlCrossRootProject
